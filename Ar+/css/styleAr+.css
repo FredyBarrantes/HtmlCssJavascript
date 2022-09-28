@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap');
+
+body {
+    background-color: #D6CDA4;
+}
+
+#Escoger-Arma {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.titulo {
+
+    color: darkolivegreen;
+    font-family: 'Shadows Into Light', cursive;
+    font-size: 324%;
+    text-align: center;
+    width: 278px;
+    height: 66px;
+    margin: 1px;
+    outline-style: solid;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #f5bb08;
+    
+}
+
+.subtitulo {
+
+    color: #824203;
+    font-family: 'Shadows Into Light';
+    font-size: 35px;
+    margin: 5px;
+}
+
+/* -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* */
+.divTarjetasArma {
+    display: flex;
+}
+
+label {
+
+    color: #824203;
+    width: 169px;
+    height: 150px;
+    margin: 6px;
+    border-radius: 20px;
+    outline-style: solid;
+    outline-color: #f5bb08;
+    background-color: olive;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+label:hover {
+    transform: translateY(-20px);
+}
+
+.imgPistola {
+
+    width: 158px;
+    height: 96px;
+
+}
+
+.imgRevolver {
+    width: 159px;
+    height: 97px;
+}
+
+.imgEscopeta {
+    width: 146px;
+    transform: rotate(45deg);
+}
+
+.imgFusil {
+    width: 155px;
+    transform: rotate(-45deg);
+}
+
+input {
+
+    display: none;
+    width: 20px;
+    height: 20px;
+}
+
+input:checked + label {
+    background-color: #f5bb08;
+}
+/* -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* */
+
+/* -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* */
+#Boton-Equipar {
+
+    color: #824203;
+    font-family: 'Shadows Into Light';
+    font-size: 155%;
+    width: 167px;
+    height: 71px;
+    box-shadow: 1px 4px 7px 1px darkolivegreen;
+    padding-top: 12px;
+    padding-bottom: 15px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-radius: 20px;
+    border-style: solid;
+    border-color: #f5bb08;
+    margin: 32px;
+    background-color: darksalmon;
+}
+
+#Boton-Equipar:hover {
+    background-color: lightsalmon;
+}
+
+#Boton-Equipar:active {
+    background-color: salmon;
+}
+/* -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* */
+
+#Escoger-ataque {
+    flex-direction: column;
+    align-items: center;
+}
+
+.botonesAtaque {
+ 
+    color: #824203;
+    font-family: 'Shadows Into Light';
+    font-size: 155%;
+    width: 96px;
+    height: 60px;
+    box-shadow: 1px 4px 7px 1px darkolivegreen;
+    border-radius: 20px;
+    border-style: solid;
+    border-color: #f5bb08;
+    margin: 2px;
+    background-color: darksalmon;
+}
+
+.botonesAtaque:hover {
+    background-color: lightsalmon;
+}
+
+.botonesAtaque:active {
+    background-color: salmon;
+}
+
+#sectInfJugContri {
+    flex-direction: row;
+    justify-content: center;
+}
+
+#divInfJugs {
+
+    color: #824203;
+    font-style: italic;
+    font-size: 20px;
+    text-align: start;
+    height: 260px;
+    width: 265px;
+    background-color: #f5bb08;
+    border-style: solid;
+    border-color: darkolivegreen;
+    margin: 2px;
+}
+
+.subNomJugs {
+    color: darkolivegreen;
+    font-family: 'Shadows Into Light';
+    font-size: 40px;
+    text-align: center;
+    margin: 1px;
+}
+
+#mensajes {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#divmensajes {
+    display: grid;
+    grid-template-columns: 125px 125px;
+    justify-content: center;
+    color: #824203;
+    font-size: 24px;
+    font-style: oblique;
+    height: 260px;
+    width: 265px;
+    margin-bottom: 3px;
+    background-color:  darkolivegreen;
+    border-style: solid;
+    border-color: #f5bb08;
+    overflow: auto;
+}
+
+.subMensajes {
+
+    color:darkolivegreen;
+    font-family: 'Shadows Into Light';
+    font-size: 40px;
+    margin: 1px;
+}
+
+#Reiniciar {
+    flex-direction: row;
+    justify-content: center;
+}
+
+/* responsive design*/
+@media (max-width: 360px) {
+
+    .titulo {
+        width: 248px;
+        height: 66px;
+        font-size: 296%;
+    }
+
+    .divTarjetasArma {
+        flex-direction: column;
+    }
+
+    .botonesAtaque {
+        display: flex;
+        flex-direction: row;
+        width: 35px;
+        height: 42px;
+        margin: 5px;
+    }
+
+    #sectInfJugContri {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #divInfJugs {
+        font-size: 14px;
+        height: 171px;
+        width: 226px;
+    }
+    #divmensajes {
+        font-size: 18px;
+        height: 171px;
+        width: 226px;
+        margin-bottom: 3px;
+    }
+}
