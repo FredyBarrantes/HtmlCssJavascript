@@ -17,13 +17,10 @@ body {
     font-family: 'Shadows Into Light', cursive;
     font-size: 324%;
     text-align: center;
-    width: 278px;
-    height: 66px;
+    width: 305px;
+    height: 77px;
     margin: 1px;
     outline-style: solid;
-    padding-bottom: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
     background-color: #f5bb08;
     
 }
@@ -129,13 +126,14 @@ input:checked + label {
     align-items: center;
 }
 
+
 .botonesAtaque {
  
     color: #824203;
     font-family: 'Shadows Into Light';
     font-size: 155%;
-    width: 96px;
-    height: 60px;
+    width: auto;
+    height: auto;
     box-shadow: 1px 4px 7px 1px darkolivegreen;
     border-radius: 20px;
     border-style: solid;

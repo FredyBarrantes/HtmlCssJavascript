@@ -3,7 +3,6 @@
     <head>
         <meta charset="utf-8"/>
         <title>Ar+</title>
-        <script src="./js/scriptAr+.js"></script>
         <link rel="stylesheet" href="./css/styleAr+.css" />
     </head>
     <body>
@@ -15,33 +14,7 @@
 
             <h2 class="subtitulo">Escoge tu arma</h2>
 
-            <div class="divTarjetasArma">
-
-                <!--Se crea un input en este caso de tipo radio(circulo) -->
-                <input type="radio" name="Escoge-Arma" id="Pistola_piedra" />
-                <!--la etiqueta for sirve para que al dar click sobre las letras o en este caso las imagenes el input sea seleccionado
-                mediante el id-->
-                <label for="Pistola_piedra">
-                    <!--Se agrega una imagen dentro del label-->
-                    <img src="./img/pistola.png" alt="Pistola" class="imgPistola" />
-                </label>
-                
-                <input type="radio" name="Escoge-Arma" id="Revolver_madera" />
-                <label for="Revolver_madera">
-                    <img src="./img/revolver.png" alt="Revolver" class="imgRevolver" />
-                </label>
-    
-                <input type="radio" name="Escoge-Arma" id="Rifle_metal" />
-                <label for="Rifle_metal">
-                    <img src="./img/escopeta.png" alt="Escopeta" class="imgEscopeta" />
-                </label>
-    
-                <input type="radio" name="Escoge-Arma" id="Fusil_metal" />
-                <label for="Fusil_metal">
-                    <img src="./img/fusil.png" alt="Fusil" class="imgFusil" />
-                </label>
-
-            </div>
+            <div id="contenedorTarjetas" class="divTarjetasArma"></div>
             
             <button id="Boton-Equipar">Equipar ✊</button>
 
@@ -53,31 +26,27 @@
 
             <h2 class="subtitulo">Escoge Ataque</h2>
                 
-            <div>
-                <button id="Boton-Agua" class="botonesAtaque" >🌊</button>
-                <button id="Boton-Fuego" class="botonesAtaque" >🔥</button>
-                <button id="Boton-Aire" class="botonesAtaque" >💨</button>
+            <div id="contenedorPoderes" ></div>
+
+
+            <div id="Reiniciar">
+                <button id="Boton-Reiniciar" class="botonesAtaque">🔁</button>
             </div>
 
-        </section>
+            <section id="mensajes">
+                <h2 class="subMensajes">Pelea</h2>
+                <div id="divmensajes">
+                </div>
+            </section>
 
-        <div id="Reiniciar">
-            <button id="Boton-Reiniciar" class="botonesAtaque">🔁</button>
-        </div>
+            <div id="sectInfJugContri">
 
-        <section id="mensajes">
-            <h2 class="subMensajes">Pelea</h2>
-            <div id="divmensajes">
-            </div>
-        </section>
-
-        <section id="sectInfJugContri">
-
-            <div id="divInfJugs">
-                <h2 class="subNomJugs">Jugador</h2>
-                <p>Arma equipada: <span id="arma-jugador"></span></p>
-                <p>Puntos de vida: <span id="vida-jugador"></span></p>
-                <p>Ataque: <span id="ataqSelecJug"></span></p>
+                <div id="divInfJugs">
+                    <h2 class="subNomJugs">Jugador</h2>
+                    <p>Arma equipada: <span id="arma-jugador"></span></p>
+                    <p>Puntos de vida: <span id="vida-jugador"></span></p>
+                    <p>Ataque: <span id="ataqSelecJug"></span></p>
+                </div>
             </div>
 
             <div id="divInfJugs">
@@ -90,4 +59,7 @@
         </section>
 
     </body>
+
+    <script src="./js/scriptAr+.js"></script>
+
 </html>
