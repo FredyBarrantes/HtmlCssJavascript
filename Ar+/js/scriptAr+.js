@@ -2,6 +2,10 @@ const spanArmaJugador = document.getElementById("arma-jugador")
 
 const spanArmaContri = document.getElementById("arma-contrincante")
 
+const botonEquipar = document.getElementById("Boton-Equipar")
+
+const botonReiniciar = document.getElementById("Boton-Reiniciar")
+
 // al oprimir el boton equipar escribe en el espacio "puntos de vida", cuantas vidas le quedan y el icono de corazon 🫀
 const spanVidaJugador = document.getElementById("vida-jugador")
 const spanvidasContri = document.getElementById("vida-contrincante")
@@ -12,13 +16,17 @@ const spanAtaqSelecContri = document.getElementById("ataqSelecContri")
 
 // Oculta la seccion Escoger-ataque en html
 const sectEscogerAtaque = document.getElementById("Escoger-ataque")
+
 // Oculta la seccion donde aparece la informacion del jugador y del contrincante.
 const sectInfJugContri = document.getElementById("sectInfJugContri")
+sectInfJugContri.style.display = "none"
+
 // Oculta la seccion Reiniciar la cual contiene el boton reiniciar en html
 const sectReiniciar = document.getElementById("Reiniciar")
+sectReiniciar.style.display = "none"
 // Oculta el div mensajes en html.
 const divMensajes = document.getElementById("mensajes")
-// La variable "botonequipar" se le indica que tome el id del elemento "Boton-Equipar" en el documento html
+divMensajes.style.display = "none"
 
 
 const contenedorTarjetas = document.getElementById("contenedorTarjetas")
@@ -30,20 +38,23 @@ const contenedorPoderes = document.getElementById("contenedorPoderes")
 //Variables globales
 let infArmas = []
 let opcionArmas
-let ataqJugador
-let ataqAleaContri
+let ataqJugador = []
+let armaSelecContri
+let poderesContri = []
 let resultado
-let vidasJugador = 3
-let vidasContri = 3
+let vidasJugador = 0
+let vidasContri = 0
 let armaJugador
 let poderesArmas
 let botonAgua
 let botonFuego
 let botonAire
+let botones = []
 let veriSelec0
 let veriSelec1
 let veriSelec2
 let veriSelec3
+let cont = -1
 
 
 class Armas {
@@ -61,27 +72,32 @@ let escopeta = new Armas("Escopeta", vidasJugador, "./img/escopeta.png")
 let fusil = new Armas("Fusil", vidasJugador, "./img/fusil.png")
 
 pistola.embate.push(
-    {nombre: "💨", id:"Boton-Aire"},
-    {nombre: "🌊", id:"Boton-Agua"},
-    {nombre: "🌊", id:"Boton-Agua"}
+    {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "💨", id: "Boton-Aire"},
+    {nombre: "🌊", id: "Boton-Agua"},
+    {nombre: "🌊", id: "Boton-Agua"},
+    
 )
 
 revolver.embate.push(
-    {nombre: "🔥", id:"Boton-Fuego"},
-    {nombre: "🔥", id:"Boton-Fuego"},
-    {nombre: "🔥", id:"Boton-Fuego"}
+    {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "💨", id: "Boton-Aire"},
+    {nombre: "🌊", id: "Boton-Agua"},
 )
 
 escopeta.embate.push(
-    {nombre: "🔥", id:"Boton-Fuego"},
-    {nombre: "🌊", id:"Boton-Agua"},
-    {nombre: "🌊", id:"Boton-Agua"}
+    {nombre: "💨", id: "Boton-Aire"},
+    {nombre: "💨", id: "Boton-Aire"},
+    {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "🌊", id: "Boton-Agua"},
 )
 
 fusil.embate.push(
-    {nombre: "🔥", id:"Boton-Fuego"},
-    {nombre: "💨", id:"Boton-Aire"},
-    {nombre: "🌊", id:"Boton-Agua"}
+    {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "💨", id: "Boton-Aire"},
+    {nombre: "🌊", id: "Boton-Agua"},
 )
 
 infArmas.push(pistola, revolver, escopeta, fusil)
@@ -95,7 +111,7 @@ function iniciarJuego() {
         opcionArmas = `
         <input type="radio" name="Escoge-Arma" id=${Armas.nombre} />
         <label for=${Armas.nombre}>
-            <img src=${Armas.imagen} alt=${Armas.nombre} class="imgPistola" />
+            <img src=${Armas.imagen} alt=${Armas.nombre} class=${Armas.nombre} />
         </label>
         `
         contenedorTarjetas.innerHTML += opcionArmas
@@ -106,28 +122,10 @@ function iniciarJuego() {
         veriSelec3 = document.getElementById("Fusil")
     })
 
-    // Oculta la seccion donde aparece la informacion del jugador y del contrincante.
-    sectInfJugContri.style.display = "none"
-
-    // Oculta la seccion Reiniciar la cual contiene el boton reiniciar en html
-    sectReiniciar.style.display = "none"
-
-    // Oculta el div mensajes en html.
-    divMensajes.style.display = "none"
-    
-
-    // Se llama la variable (botonEquipar) y se añade que si el jugador ha hecho click ejecute la funcion
-    // "seleccArmaJugador"
-    let botonEquipar = document.getElementById("Boton-Equipar")
+    // Se llama la variable (botonEquipar) y se añade que si el jugador ha hecho click ejecute la funcion "seleccArmaJugador"
     botonEquipar.addEventListener("click", seleccArmaJugador)
 
-    let botonReiniciar = document.getElementById("Boton-Reiniciar")
     botonReiniciar.addEventListener("click", fnReiniciar)
-
-    // se llama la variable "spanVidaJugador" se le indica que escriba lo que contiene la variable "vidasJugador" en "spanVidaJugador"
-    spanVidaJugador.innerHTML = vidasJugador
-
-    //spanvidasContri.innerHTML = vidasContribotonAgua
 
 }
 
@@ -170,30 +168,47 @@ function extraerPoderes(armaJugador) {
             poderes = infArmas[i].embate
         }   
     }
-    
     mostrarPoderes(poderes)
 }
 
 function mostrarPoderes(poderes) {
     poderes.forEach((poder) => {
+        
         poderesArmas = `
-        <button id=${poder.id} class="botonesAtaque" >${poder.nombre}</button>
-        `
-        contenedorPoderes.innerHTML += poderesArmas
-        })
+            <button id=${poder.id} class="botonesAtaque act-botones" >${poder.nombre}</button>
+            `
+            contenedorPoderes.innerHTML += poderesArmas
+    })
 
-        botonAgua = document.getElementById("Boton-Agua")
-        botonFuego = document.getElementById("Boton-Fuego")
-        botonAire = document.getElementById("Boton-Aire")
-        
-        botonAgua.addEventListener("click", ataqueAgua)
-        botonFuego.addEventListener("click", ataqueFuego)
-        botonAire.addEventListener("click", ataqueAire)
-        console.log(botonAgua)
-        console.log(botonFuego)
-        console.log(botonAire)
-        
+    botonFuego = document.getElementById("Boton-Fuego")
+    botonAgua = document.getElementById("Boton-Agua")
+    botonAire = document.getElementById("Boton-Aire")
+
+    botones = document.querySelectorAll(".act-botones")
 }
+
+function secAtaque() {
+    botones.forEach((boton)=> {
+        boton.addEventListener("click", (e) => {
+            if(e.target.textContent === "🔥") {
+                ataqJugador.push("🔥")
+                boton.style.background = "#D6CDA4"
+                boton.disabled = true
+                lucha()
+            }else if(e.target.textContent === "🌊") {
+                ataqJugador.push("🌊")
+                boton.style.background = "#D6CDA4"
+                boton.disabled = true
+                lucha()
+            }else {
+                ataqJugador.push("💨")
+                boton.style.background = "#D6CDA4"
+                boton.disabled = true
+                lucha()
+            }
+        })
+    })
+} 
 
 function seleccArmaContri() {
 
@@ -201,6 +216,11 @@ function seleccArmaContri() {
     let selec = Math.floor(Math.random() * ((infArmas.length - 1) - 0 + 1) + 0)
 
     spanArmaContri.innerHTML = infArmas[selec].nombre
+    armaSelecContri = infArmas[selec].nombre
+
+    poderesContri = infArmas[selec].embate
+    // sort(function(){return Math.random() - 0.5 }) esta parte del codigo ordena de forma aleatoria el arreglo
+    poderesContri.sort(function(){return Math.random() - 0.5 });
 
      // Muestra la seccion Escoger-ataque en html
      let sectEscogerAtaque = document.getElementById("Escoger-ataque")
@@ -217,90 +237,59 @@ function seleccArmaContri() {
      // Oculta la seccion Escoger-Arma en html
      let sectEscogerArma = document.getElementById("Escoger-Arma")
      sectEscogerArma.style.display = "none"
-}
 
-function ataqueAgua() {
-
-    ataqJugador = "🌊"
-
-    spanAtaqSelecJug.innerHTML = "Agua 🌊"
-    ataqContri()
-}
-
-function ataqueFuego() {
-
-    ataqJugador = "🔥"
-
-    spanAtaqSelecJug.innerHTML = "Fuego 🔥"
-    ataqContri()
-}
-
-function ataqueAire() {
-
-    ataqJugador = "💨"
-
-    spanAtaqSelecJug.innerHTML = "Aire 💨"
-    ataqContri()
-}
-
-function ataqContri() {
-
-    let selec = Math.floor(Math.random()*(3 - 1 + 1) + 1)
-
-    if (selec == 1) {
-        spanAtaqSelecContri.innerHTML = "Agua 🌊"
-        ataqAleaContri = "🌊"
-    }else if (selec == 2) {
-        spanAtaqSelecContri.innerHTML = "Fuego 🔥"
-        ataqAleaContri = "🔥"
-    }else {
-        spanAtaqSelecContri.innerHTML = "Aire 💨"
-        ataqAleaContri = "💨"
-    }
-
-    lucha()
+     secAtaque()
 }
 
 function lucha() {
 
+    cont += 1
     // 1 -> Agua / 2 -> Fuego / 3 -> Aire
-    if (ataqJugador == ataqAleaContri) {
+    if (ataqJugador[cont] == poderesContri[cont].nombre) {
         resultado = "Empate"
         mensajeBatalla()
-    }else if (ataqJugador == "🌊" && ataqAleaContri == "🔥" ) {
-        vidasContri--
+    }else if (ataqJugador[cont] == "🌊" && poderesContri[cont].nombre == "🔥" ) {
+        vidasJugador++
         resultado = " 👍"
         spanVidaJugador.innerHTML = vidasJugador + "🫀"
         spanvidasContri.innerHTML = vidasContri + "🫀"
         mensajeBatalla()
-    }else if (ataqJugador == "🔥" && ataqAleaContri == "💨") {
-        vidasContri--
+    }else if (ataqJugador[cont] == "🔥" && poderesContri[cont].nombre == "💨") {
+        vidasJugador++
         resultado = " 👍"
         spanVidaJugador.innerHTML = vidasJugador + "🫀"
         spanvidasContri.innerHTML = vidasContri + "🫀"
         mensajeBatalla()
-    }else if (ataqJugador == "💨" && ataqAleaContri == "🌊") {
-        vidasContri--
+    }else if (ataqJugador[cont] == "💨" && poderesContri[cont].nombre == "🌊") {
+        vidasJugador++
         resultado = " 👍"
         spanVidaJugador.innerHTML = vidasJugador + "🫀"
         spanvidasContri.innerHTML = vidasContri + "🫀"
         mensajeBatalla()
     }else {
-        vidasJugador--
+        vidasContri++
         resultado = " 👎 -1 🫀"
         spanVidaJugador.innerHTML = vidasJugador + "🫀"
+        spanvidasContri.innerHTML = vidasContri + "🫀"
         mensajeBatalla()
     }
 
-    verificarVidas()
+    spanAtaqSelecJug.innerHTML = ataqJugador[cont]
+    spanAtaqSelecContri.innerHTML = poderesContri[cont].nombre
+
+    verificarRepeticiones()
 }
 
-function verificarVidas() {
+function verificarRepeticiones() {
 
-    if (vidasJugador == 0) {
-        mensajeFinal("🇵 🇮 🇪 🇷 🇩 🇪 🇸 😱🤬")
-    }else if (vidasContri == 0) {
-        mensajeFinal("🇬 🇦 🇳 🇦 🇸 🎉🥳")
+    if (cont == 3) {
+        if (vidasJugador > vidasContri) {
+            mensajeFinal("🇬 🇦 🇳 🇦 🇸 🎉🥳")
+        }else if (vidasContri > vidasJugador) {
+            mensajeFinal("🇵 🇮 🇪 🇷 🇩 🇪 🇸 😱🤬")
+        }else {
+            mensajeFinal("🇪 🇲 🇵 🇦 🇹 🇪 😒😕")
+        }
     }
 }
 
@@ -309,7 +298,7 @@ function mensajeBatalla() {
     // la variable "parrafo1" crea un elementp <p>
     let parrafo1 = document.createElement("p")
     // Con la eqtiqueta <p> creada se inserta el ataque del jugador y del pc
-    parrafo1.innerHTML = ataqJugador + " ⚔ " + ataqAleaContri + "   🟰"
+    parrafo1.innerHTML = ataqJugador[cont] + " ⚔ " + poderesContri[cont].nombre + "   🟰"
     // la variable "secMensaje" se utiliza para indicar que lo escrito por la variable "parrafo1" no sea remplazado si no escrito abajo
     // del anterior mensaje y se le indica en que parte del html se quiere insertar la informacion
     let secMensaje = document.getElementById("divmensajes")
@@ -328,17 +317,7 @@ function mensajeFinal(menfin) {
     let secMensaje = document.getElementById("divmensajes")
     secMensaje.appendChild(parrafo)
 
-
-    // Desactiva los botones de agua, fuego y aire.
-    let botonAgua = document.getElementById("Boton-Agua")
-    botonAgua.disabled = true
-    let botonFuego = document.getElementById("Boton-Fuego")
-    botonFuego.disabled = true
-    let botonAire = document.getElementById("Boton-Aire")
-    botonAire.disabled = true
-
     // Activa la seccion donde se encuentra el boton reiniciar.
-    let sectReiniciar = document.getElementById("Reiniciar")
     sectReiniciar.style.display = "flex"
 }
 
