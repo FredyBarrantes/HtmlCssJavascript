@@ -33,6 +33,32 @@ body {
     margin: 5px;
 }
 
+.Div-Tarjetas-Personajes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.imgVaquero🤠 {
+    width: 67px;
+    height: 131px;
+}
+
+.mini-imgVaquero🤠 {
+    width: 30px;
+    height: 60px;
+}
+
+.imgSoldado🪖 {
+    width: 160px;
+    height: 133px;
+}
+
+.mini-imgSoldado🪖 {
+    width: 73px;
+    height: 62px;
+}
+
 /* -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* */
 .divTarjetasArma {
     display: flex;
@@ -160,8 +186,8 @@ input:checked + label {
     color: #824203;
     font-style: italic;
     font-size: 20px;
-    text-align: start;
-    height: 260px;
+    text-align: center;
+    height: 283px;
     width: 265px;
     background-color: #f5bb08;
     border-style: solid;
@@ -175,6 +201,16 @@ input:checked + label {
     font-size: 40px;
     text-align: center;
     margin: 1px;
+}
+
+#DivImgSelecJugador {
+    display: flex;
+    justify-content: center;
+}
+
+#DivImgSelecContri {
+    display: flex;
+    justify-content: center;
 }
 
 #mensajes {

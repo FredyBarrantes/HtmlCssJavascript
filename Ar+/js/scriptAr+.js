@@ -28,22 +28,27 @@ sectReiniciar.style.display = "none"
 const divMensajes = document.getElementById("mensajes")
 divMensajes.style.display = "none"
 
+const sectEscogerArma = document.getElementById("Escoger-Arma")
+
 
 const contenedorTarjetas = document.getElementById("contenedorTarjetas")
 const contenedorPoderes = document.getElementById("contenedorPoderes")
 
+const DivTarjetasPersonajes = document.getElementById("Div-Tarjetas-Personajes")
+const DivImgSelecJugador = document.getElementById("DivImgSelecJugador")
 
+const DivImgSelecContri = document.getElementById("DivImgSelecContri")
 
 
 //Variables globales
+// "infArmas" este arreglo contiene la informacion de los objetos de la clase "class Armas"
 let infArmas = []
 let opcionArmas
 let ataqJugador = []
-let armaSelecContri
 let poderesContri = []
 let resultado
-let vidasJugador = 0
-let vidasContri = 0
+let vidasJugador = ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀"]
+let vidasContri = ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀"]
 let armaJugador
 let poderesArmas
 let botonAgua
@@ -56,17 +61,39 @@ let veriSelec2
 let veriSelec3
 let cont = -1
 
+// "infPersonajes" este arreglo contiene la informacion de la clase "class Personajes"
+let infPersonajes = []
+let opcionPersonajes
+let inputIdVaquero
+let inputIdSoldado
 
+// Inicia seccion class Personajes
+class Personajes {
+    constructor(nombre, imagen) {
+        this.nombre = nombre
+        this.imagen = imagen
+    }
+}
+
+let vaquero = new Personajes("Vaquero🤠", "./img/silueta-vaquero.png")
+let soldado = new Personajes("Soldado🪖", "./img/silueta-soldado.png")
+
+infPersonajes.push(vaquero, soldado)
+// Finaliza seccion class Personajes
+
+// Inicia seccion class Armas
+// Se crea la clase Armas la cual contiene las caracteristicas nombre,vida e imagen tambien un arreglo llamado "embate"
 class Armas {
     constructor(nombre, vida, imagen) {
         this.nombre = nombre
         this.vida = vida
         this.imagen = imagen
+        // "embate" este arreglo contiene los ataques del arma que escogio el jugador
         this.embate = []
     }
 }
 
-let pistola = new Armas("Pistola", vidasJugador, "./img/pistola.png",)
+let pistola = new Armas("Pistola", vidasJugador, "./img/pistola.png")
 let revolver = new Armas("Revolver", vidasJugador, "./img/revolver.png")
 let escopeta = new Armas("Escopeta", vidasJugador, "./img/escopeta.png")
 let fusil = new Armas("Fusil", vidasJugador, "./img/fusil.png")
@@ -74,14 +101,18 @@ let fusil = new Armas("Fusil", vidasJugador, "./img/fusil.png")
 pistola.embate.push(
     {nombre: "🔥", id: "Boton-Fuego"},
     {nombre: "💨", id: "Boton-Aire"},
+    {nombre: "💨", id: "Boton-Aire"},
     {nombre: "🌊", id: "Boton-Agua"},
     {nombre: "🌊", id: "Boton-Agua"},
+    {nombre: "🌊", id: "Boton-Agua"}
     
 )
 
 revolver.embate.push(
     {nombre: "🔥", id: "Boton-Fuego"},
     {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "💨", id: "Boton-Aire"},
     {nombre: "💨", id: "Boton-Aire"},
     {nombre: "🌊", id: "Boton-Agua"},
 )
@@ -90,22 +121,41 @@ escopeta.embate.push(
     {nombre: "💨", id: "Boton-Aire"},
     {nombre: "💨", id: "Boton-Aire"},
     {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "🌊", id: "Boton-Agua"},
     {nombre: "🌊", id: "Boton-Agua"},
 )
 
 fusil.embate.push(
     {nombre: "🔥", id: "Boton-Fuego"},
     {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "🔥", id: "Boton-Fuego"},
+    {nombre: "🔥", id: "Boton-Fuego"},
     {nombre: "💨", id: "Boton-Aire"},
     {nombre: "🌊", id: "Boton-Agua"},
 )
-
+// Se inyecta la informacion del objeto al arreglo "infArmas"
 infArmas.push(pistola, revolver, escopeta, fusil)
+// Finaliza seccion class Armas
 
 function iniciarJuego() {
 
     // Oculta la seccion Escoger-ataque en html
     sectEscogerAtaque.style.display = "none"
+
+    infPersonajes.forEach((Personajes) => {
+        opcionPersonajes = `
+        <input type="radio" name="Escoge-Personaje" id=${Personajes.nombre} />
+        <label for=${Personajes.nombre}>
+            <img src=${Personajes.imagen} alt=${Personajes.nombre} class=${"img"+Personajes.nombre} />
+        </label>
+        `
+        DivTarjetasPersonajes.innerHTML += opcionPersonajes
+
+        inputIdVaquero = document.getElementById("Vaquero🤠")
+        inputIdSoldado = document.getElementById("Soldado🪖")
+        
+    })
 
     infArmas.forEach((Armas) => {
         opcionArmas = `
@@ -131,33 +181,55 @@ function iniciarJuego() {
 
 function seleccArmaJugador() {
 
-    spanVidaJugador.innerHTML = vidasJugador + "🫀"
-    spanvidasContri.innerHTML = vidasContri + "🫀" 
+    // "act1 y 2" esta variables sirven para activar o marcar el momento que el usuario ha escogido un personaje y un arma si falta por
+    // escoger alguno no seguira el juego ya que dichas variables estan en un "if" verificando que ambas sean iguales a 1 
+    act1 = 0
+    act2 = 0
+    
+    if (inputIdVaquero.checked) {
+        vidasJugador.push("🫀", "🫀")
+        spanVidaJugador.innerHTML = vidasJugador
+        spanvidasContri.innerHTML = vidasContri
+        DivImgSelecJugador.innerHTML = `<img src=${infPersonajes[0].imagen} alt=${infPersonajes[0].nombre} class=${"mini-img"+infPersonajes[0].nombre} />`
+        act2 = 1
+    }else if (inputIdSoldado.checked) {
+        DivImgSelecJugador.innerHTML = `<img src=${infPersonajes[1].imagen} alt=${infPersonajes[1].nombre} class=${"mini-img"+infPersonajes[1].nombre} />`
+        act2 = 1
+    }else {
+        alert("Debes escoger a un personaje")
+    }
 
     // "checked"-> verifica si el input ha sido seleccionado por el jugador, si es verdadero escribe el arma seleccionada en la
     // informacion del jugador y ejecuta la funcion "seleccArmaContri" para que el pc escoja el arma
     if (veriSelec0.checked) {
         spanArmaJugador.innerHTML = veriSelec0.id
         armaJugador = veriSelec0.id
+        act1 = 1
         alert("Pistola ha sido equipada")
     }else if (veriSelec1.checked) {
         spanArmaJugador.innerHTML = veriSelec1.id
         armaJugador = veriSelec1.id
+        act1 = 1
         alert("Revolver ha sido equipado")
     }else if (veriSelec2.checked) {
         spanArmaJugador.innerHTML = veriSelec2.id
         armaJugador = veriSelec2.id
+        act1 = 1
         alert("Escopeta ha sido equipada")
     }else if (veriSelec3.checked) {
         spanArmaJugador.innerHTML = veriSelec3.id
         armaJugador = veriSelec3.id
+        act1 = 1
         alert("Fusil ha sido equipado")
     }else {
         alert("Debes dar click sobre algun arma.")
     }
 
-    extraerPoderes(armaJugador)
-    seleccArmaContri() 
+    
+    if (act1 == 1 && act2 == 1) {
+        extraerPoderes(armaJugador)
+        seleccArmaContri()
+    }
 }
 
 function extraerPoderes(armaJugador) {
@@ -215,62 +287,70 @@ function seleccArmaContri() {
     // la seccion siguiente es utilizada para generar un numero alatorio entre 1 y 4, de esta forma el pc puede seleccionar un arma
     let selec = Math.floor(Math.random() * ((infArmas.length - 1) - 0 + 1) + 0)
 
+    // Se escribe en el documento html el arma que ha escogido el pc
     spanArmaContri.innerHTML = infArmas[selec].nombre
-    armaSelecContri = infArmas[selec].nombre
-
+    
+    // Se envia lo que contiene el arreglo "infArmas[].embate" al arreglo "poderesContri"
     poderesContri = infArmas[selec].embate
     // sort(function(){return Math.random() - 0.5 }) esta parte del codigo ordena de forma aleatoria el arreglo
     poderesContri.sort(function(){return Math.random() - 0.5 });
 
-     // Muestra la seccion Escoger-ataque en html
-     let sectEscogerAtaque = document.getElementById("Escoger-ataque")
-     sectEscogerAtaque.style.display = "flex"
+    // selecciona un numero aleatorio entre 0 y 1 dependiendo de cuantos personajes existen en el arreglo "infPersonajes"
+    selec = Math.floor(Math.random() * ((infPersonajes.length - 1) - 0 + 1) + 0)
+    if (selec == 0) {
+        vidasContri.push("🫀", "🫀")
+        spanVidaJugador.innerHTML = vidasJugador
+        spanvidasContri.innerHTML = vidasContri
+    }
+    // Se escribe la imagen seleccionada del pc en el apartado contrincante
+    DivImgSelecContri.innerHTML = `<img src=${infPersonajes[selec].imagen} alt=${infPersonajes[selec].nombre} class=${"mini-img"+infPersonajes[selec].nombre} />`
+    
+
+    // Muestra la seccion Escoger-ataque en html
+    sectEscogerAtaque.style.display = "flex"
 
     // Muestra la seccion donde se encuentra la informacion del jugador y del contrincante.
-     let sectInfJugContri = document.getElementById("sectInfJugContri")
-     sectInfJugContri.style.display = "flex" 
+    sectInfJugContri.style.display = "flex" 
 
-     // Muestra el div donde aparecen los mensajes
-     let divMensajes = document.getElementById("mensajes")
-     divMensajes.style.display = "flex"
+    // Muestra el div donde aparecen los mensajes
+    divMensajes.style.display = "flex"
  
-     // Oculta la seccion Escoger-Arma en html
-     let sectEscogerArma = document.getElementById("Escoger-Arma")
-     sectEscogerArma.style.display = "none"
+    // Oculta la seccion Escoger-Arma en html
+    sectEscogerArma.style.display = "none"
 
-     secAtaque()
+    secAtaque()
 }
 
 function lucha() {
 
     cont += 1
-    // 1 -> Agua / 2 -> Fuego / 3 -> Aire
+    
     if (ataqJugador[cont] == poderesContri[cont].nombre) {
         resultado = "Empate"
         mensajeBatalla()
     }else if (ataqJugador[cont] == "🌊" && poderesContri[cont].nombre == "🔥" ) {
-        vidasJugador++
+        vidasContri.pop()
         resultado = " 👍"
-        spanVidaJugador.innerHTML = vidasJugador + "🫀"
-        spanvidasContri.innerHTML = vidasContri + "🫀"
+        spanVidaJugador.innerHTML = vidasJugador
+        spanvidasContri.innerHTML = vidasContri
         mensajeBatalla()
     }else if (ataqJugador[cont] == "🔥" && poderesContri[cont].nombre == "💨") {
-        vidasJugador++
+        vidasContri.pop()
         resultado = " 👍"
-        spanVidaJugador.innerHTML = vidasJugador + "🫀"
-        spanvidasContri.innerHTML = vidasContri + "🫀"
+        spanVidaJugador.innerHTML = vidasJugador
+        spanvidasContri.innerHTML = vidasContri
         mensajeBatalla()
     }else if (ataqJugador[cont] == "💨" && poderesContri[cont].nombre == "🌊") {
-        vidasJugador++
+        vidasContri.pop()
         resultado = " 👍"
-        spanVidaJugador.innerHTML = vidasJugador + "🫀"
-        spanvidasContri.innerHTML = vidasContri + "🫀"
+        spanVidaJugador.innerHTML = vidasJugador
+        spanvidasContri.innerHTML = vidasContri
         mensajeBatalla()
     }else {
-        vidasContri++
+        vidasJugador.pop()
         resultado = " 👎 -1 🫀"
-        spanVidaJugador.innerHTML = vidasJugador + "🫀"
-        spanvidasContri.innerHTML = vidasContri + "🫀"
+        spanVidaJugador.innerHTML = vidasJugador
+        spanvidasContri.innerHTML = vidasContri
         mensajeBatalla()
     }
 
