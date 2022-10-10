@@ -187,7 +187,7 @@ input:checked + label {
     font-style: italic;
     font-size: 20px;
     text-align: center;
-    height: 283px;
+    height: 376px;
     width: 265px;
     background-color: #f5bb08;
     border-style: solid;
@@ -213,6 +213,18 @@ input:checked + label {
     justify-content: center;
 }
 
+#spanTurnoAtaqueJug, #spanTurnoAtaqueContri {
+    font-size: 60px;
+    animation: parpadear 1.5s infinite backwards steps(2);
+}
+
+@keyframes parpadear {
+    to {
+      color:red;
+      text-shadow:green;
+    }
+  }
+
 #mensajes {
     flex-direction: column;
     align-items: center;
@@ -226,7 +238,7 @@ input:checked + label {
     color: #824203;
     font-size: 24px;
     font-style: oblique;
-    height: 260px;
+    height: 376px;
     width: 265px;
     margin-bottom: 3px;
     background-color:  darkolivegreen;
