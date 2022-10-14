@@ -260,6 +260,17 @@ input:checked + label {
     justify-content: center;
 }
 
+/*estilo section canvas*/
+#activarMapa {
+    flex-direction: column;
+    align-items: center;
+}
+#mapa {
+    border: solid;
+    border-color: darkolivegreen;
+    margin: 3px;
+}
+
 /* responsive design*/
 @media (max-width: 360px) {
 

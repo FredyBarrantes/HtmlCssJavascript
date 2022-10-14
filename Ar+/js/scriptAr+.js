@@ -48,6 +48,10 @@ const divEscudosContri = document.getElementById("divEscudosContri")
 const divBotonCascos = document.getElementById("divBotonCascos")
 divBotonCascos.style.display = "none"
 
+// constantes canvas
+const sectionActivarMapa = document.getElementById("activarMapa")
+const canvasMapa = document.getElementById("mapa")
+
 //Variables globales
 // "infArmas" este arreglo contiene la informacion de los objetos de la clase "class Armas"
 let infArmas = []
@@ -76,24 +80,85 @@ let opcionPersonajes
 let inputIdVaquero
 let inputIdSoldado
 let ind = 0
-let turno = 0
+let turno = -1
 let escudosJug = []
 let escudosContri = []
 
+//Variables canvas
+let lienzo = mapa.getContext("2d")
+let intervalo
+let tierraSeca = new Image()
+tierraSeca.src = "./img/mapas/mapTierraSeca.png"
+let personajeJugador
+let itemsPersonajeJugador
+let infContrincante = []
+
 // Inicia seccion class Personajes
 class Personajes {
-    constructor(nombre, imagen) {
+    constructor(nombre, imagen, x = 340, y = 350, ancho, alto) {
         this.nombre = nombre
         this.imagen = imagen
+        this.x = x
+        this.y = y
+        this.ancho = ancho
+        this.alto = alto
+        this.mapaFoto = new Image()
+        this.mapaFoto.src = imagen
+        this.velocidadX = 0
+        this.velocidadY = 0
+    }
+
+    pintarPersonajeJugador() {
+        lienzo.drawImage(
+            this.mapaFoto,
+            // posicion X
+            this.x,
+            // posicion Y
+            this.y,
+            this.ancho,
+            this.alto
+            )
     }
 }
 
-let vaquero = new Personajes("Vaquero🤠", "./img/silueta-vaquero.png")
-let soldado = new Personajes("Soldado🪖", "./img/silueta-soldado.png")
+let vaquero = new Personajes("Vaquero🤠", "./img/personajesJugador/vaquero.png", 340, 350, 25, 50)
+let soldado = new Personajes("Soldado🪖", "./img/personajesJugador/soldado.png", 340, 350, 50, 50)
 
 infPersonajes.push(vaquero, soldado)
 // Finaliza seccion class Personajes
 
+// incia seccion class personajes Contrincante
+class PersonajesContrincante {
+    constructor(nombre, img, x, y, ancho, alto) {
+        this.nombre = nombre
+        this.img = img
+        this.x = x
+        this.y = y
+        this.ancho = ancho
+        this.alto = alto
+        this.imgMapa = new Image()
+        this.imgMapa.src = img
+    }
+
+    pintarContrincantes() {
+        lienzo.drawImage(
+            this.imgMapa,
+            // posicion X
+            this.x,
+            // posicion Y
+            this.y,
+            this.ancho,
+            this.alto
+            )
+    }
+}
+
+let treeProtector = new PersonajesContrincante("TreeProtector", "./img/personajesContri/imgMapaTreeProtector.png", 280, 40, 50, 62)
+let venomFeather = new PersonajesContrincante("VenomFeather", "./img/personajesContri/imgMapaVenomFeather.png", 680, 465, 50, 52)
+let bandido = new PersonajesContrincante("bandido", "./img/personajesContri/imgMapaBandido.png", 5, 380, 25, 50)
+let vaqueroBandido = new PersonajesContrincante("bandido", "./img/personajesContri/imgMapaVaqueroBandido.png", 5, 330, 25, 50)
+infContrincante.push(treeProtector, venomFeather, bandido, vaqueroBandido)
+ 
 // Inicia seccion class Armas
 // Se crea la clase Armas la cual contiene las caracteristicas nombre,vida e imagen tambien un arreglo llamado "embate"
 class Armas {
@@ -106,10 +171,10 @@ class Armas {
     }
 }
 
-let pistola = new Armas("Pistola", vidasJugador, "./img/pistola.png")
-let revolver = new Armas("Revolver", vidasJugador, "./img/revolver.png")
-let escopeta = new Armas("Escopeta", vidasJugador, "./img/escopeta.png")
-let fusil = new Armas("Fusil", vidasJugador, "./img/fusil.png")
+let pistola = new Armas("Pistola", vidasJugador, "./img/armas/pistola.png")
+let revolver = new Armas("Revolver", vidasJugador, "./img/armas/revolver.png")
+let escopeta = new Armas("Escopeta", vidasJugador, "./img/armas/escopeta.png")
+let fusil = new Armas("Fusil", vidasJugador, "./img/armas/fusil.png")
 
 pistola.embate.push(
     {nombre: "🔥", id: "Boton-Fuego"},
@@ -153,6 +218,8 @@ infArmas.push(pistola, revolver, escopeta, fusil)
 
 function iniciarJuego() {
 
+    // ocultar section en la cual se encuentra el canvas "mapa"
+    sectionActivarMapa.style.display = "none"
     // Oculta la seccion Escoger-ataque en html
     sectEscogerAtaque.style.display = "none"
 
@@ -212,6 +279,7 @@ function seleccArmaJugador() {
     act2 = 0
     /*Verifica si el elmento que se encuentra de la variable "inputIdVaquero" ha sido seleccionado con un click*/
     if (inputIdVaquero.checked) {
+        personajeJugador = inputIdVaquero.id
         /*el jugador ha escogido al vaquero lo cual el plus es un punto mas de vida, se envia este punto de vida al arreglo de "vidasJugador"
         y se actualiza la info del jugador en html*/
         vidasJugador.push("🫀")
@@ -222,6 +290,7 @@ function seleccArmaJugador() {
         /*Se cambia el contenido de la variable "act2" por 1 para indicar que el jgador ya ha seleccionado un personaje*/
         act2 = 1
     }else if (inputIdSoldado.checked) {
+        personajeJugador = inputIdSoldado.id
         /*El soldado tiene el plus de iniciar la partida con un casco el cual absorbe el ataque del contrincante en ese turno y desaparece
         inclusive si el jugador y el pc utilizan el mismo elemento en el ataque y en la defensa es decir un empate*/
         escudosJug.push("🪖")
@@ -232,6 +301,7 @@ function seleccArmaJugador() {
     }else {
         alert("Debes escoger a un personaje")
     }
+
 
     /* "checked"-> verifica si el input ha sido seleccionado por el jugador, si es verdadero escribe el arma seleccionada en la
     informacion del jugador y ejecuta la funcion "seleccArmaContri" para que el pc escoja el arma */
@@ -258,6 +328,8 @@ function seleccArmaJugador() {
     }else {
         alert("Debes dar click sobre algun arma.")
     }
+
+    iniciarMundo()
 
     /*Si el jugador a seleccionado un personaje y un arma se ejecutaran las funciones "extraerPoderes" y "seleccArmaContri" de lo
     contrario enviara los alert indicando que debe escoger un personaje o un arma*/
@@ -324,14 +396,17 @@ function seleccArmaContri() {
         divEscudosJug.innerHTML = escudosJug
     }
     // Se escribe la imagen seleccionada del pc en el apartado contrincante
-    DivImgSelecContri.innerHTML = `<img src=${infPersonajes[selec].imagen} alt=${infPersonajes[selec].nombre} class=${"mini-img"+infPersonajes[selec].nombre} />`
+    DivImgSelecContri.innerHTML = `<img src=${infContrincante[selec].img} alt=${infContrincante[selec].nombre} class=${"mini-img"+infContrincante[selec].nombre} />`
     
 
     // Muestra la seccion Escoger-ataque en html
-    sectEscogerAtaque.style.display = "flex"
+    //sectEscogerAtaque.style.display = "flex"
+
+    // activa la seccion donde se encuentra el canvas
+    sectionActivarMapa.style.display = "flex"
 
     // Muestra la seccion donde se encuentra la informacion del jugador y del contrincante.
-    sectInfJugContri.style.display = "flex" 
+    //sectInfJugContri.style.display = "flex" 
 
     // Muestra el div donde aparecen los mensajes
     divMensajes.style.display = "flex"
@@ -384,56 +459,50 @@ function lucha() {
         }else
         if (ataqJugador[cont] == "🌊" && poderesContri[cont].nombre == "🔥") {
             vidasContri.splice(vidasContri.length - 2, vidasContri.length)
-            spanVidaJugador.innerHTML = vidasJugador
             spanvidasContri.innerHTML = vidasContri
             resultado = " Oponente -🫀🫀"
             mensajeBatalla()
         }else
         if (ataqJugador[cont] == "🌊" && poderesContri[cont].nombre == "💨") {
+            resultado = " Sin daño"
+            mensajeBatalla()
+        }else
+        if (ataqJugador[cont] == "🌊" && poderesContri[cont].nombre == "🌊") {
             vidasContri.pop()
-            spanVidaJugador.innerHTML = vidasJugador
             spanvidasContri.innerHTML = vidasContri
             resultado = " Oponente -🫀"
             mensajeBatalla()
         }else
-        if (ataqJugador[cont] == "🌊" && poderesContri[cont].nombre == "🌊") {
-            resultado = " Empate"
-            mensajeBatalla()
-        }else
         if (ataqJugador[cont] == "🔥" && poderesContri[cont].nombre == "💨") {
             vidasContri.splice(vidasContri.length - 2, vidasContri.length)
-            spanVidaJugador.innerHTML = vidasJugador
             spanvidasContri.innerHTML = vidasContri
             resultado = " Oponente -🫀🫀"
             mensajeBatalla()
         }else
         if (ataqJugador[cont] == "🔥" && poderesContri[cont].nombre == "🌊") {
-            vidasContri.pop()
-            spanVidaJugador.innerHTML = vidasJugador
-            spanvidasContri.innerHTML = vidasContri
-            resultado = " Oponente -🫀"
+            resultado = " Sin daño"
             mensajeBatalla()
         }else
         if (ataqJugador[cont] == "🔥" && poderesContri[cont].nombre == "🔥") {
-            resultado = " Empate"
+            vidasContri.pop()
+            resultado = " Oponente -🫀"
+            spanvidasContri.innerHTML = vidasContri
             mensajeBatalla()
         }else
         if (ataqJugador[cont] == "💨" && poderesContri[cont].nombre == "🌊") {
             vidasContri.splice(vidasContri.length - 2, vidasContri.length)
-            spanVidaJugador.innerHTML = vidasJugador
             spanvidasContri.innerHTML = vidasContri
             resultado = " Oponente -🫀🫀"
             mensajeBatalla()
         }else
         if (ataqJugador[cont] == "💨" && poderesContri[cont].nombre == "🔥") {
-            vidasContri.pop()
-            spanVidaJugador.innerHTML = vidasJugador
-            spanvidasContri.innerHTML = vidasContri
-            resultado = " Oponente -🫀"
+            resultado = " Sin daño"
             mensajeBatalla()
         }else
         if (ataqJugador[cont] == "💨" && poderesContri[cont].nombre == "💨") {
-            resultado = " Empate"
+            vidasContri.pop()
+            resultado = " Oponente -🫀"
+            spanvidasContri.innerHTML = vidasContri
             mensajeBatalla()
         }
 
@@ -449,55 +518,49 @@ function lucha() {
         if (poderesContri[cont].nombre == "🌊" && ataqJugador[cont] == "🔥") {
             vidasJugador.splice(vidasJugador.length - 2, vidasJugador.length)
             spanVidaJugador.innerHTML = vidasJugador
-            spanvidasContri.innerHTML = vidasContri
             resultado = " Tu -🫀🫀"
             mensajeBatalla()
         }else
         if (poderesContri[cont].nombre == "🌊" && ataqJugador[cont] == "💨") {
-            vidasJugador.pop()
-            spanVidaJugador.innerHTML = vidasJugador
-            spanvidasContri.innerHTML = vidasContri
-            resultado = " Tu -🫀"
+            resultado = " Sin daño"
             mensajeBatalla()
         }else
         if (poderesContri[cont].nombre == "🌊" && ataqJugador[cont] == "🌊") {
-            resultado = " Empate"
+            vidasJugador.pop()
+            resultado = " Tu -🫀"
+            spanVidaJugador.innerHTML = vidasJugador
             mensajeBatalla()
         }else
         if (poderesContri[cont].nombre == "🔥" && ataqJugador[cont] == "💨") {
             vidasJugador.splice(vidasJugador.length - 2, vidasJugador.length)
             spanVidaJugador.innerHTML = vidasJugador
-            spanvidasContri.innerHTML = vidasContri
             resultado = " Tu -🫀🫀"
             mensajeBatalla()
         }else
         if (poderesContri[cont].nombre == "🔥" && ataqJugador[cont] == "🌊") {
-            vidasJugador.pop()
-            spanVidaJugador.innerHTML = vidasJugador
-            spanvidasContri.innerHTML = vidasContri
-            resultado = " Tu -🫀"
+            resultado = " Sin daño"
             mensajeBatalla()
         }else
         if (poderesContri[cont].nombre == "🔥" && ataqJugador[cont] == "🔥") {
-            resultado = " Empate"
+            vidasJugador.pop()
+            resultado = " Tu -🫀"
+            spanVidaJugador.innerHTML = vidasJugador
             mensajeBatalla()
         }else
         if (poderesContri[cont].nombre == "💨" && ataqJugador[cont] == "🌊") {
             vidasJugador.splice(vidasJugador.length - 2, vidasJugador.length)
             spanVidaJugador.innerHTML = vidasJugador
-            spanvidasContri.innerHTML = vidasContri
             resultado = " Tu -🫀🫀"
             mensajeBatalla()
         }else
         if (poderesContri[cont].nombre == "💨" && ataqJugador[cont] == "🔥") {
-            vidasJugador.pop()
-            spanVidaJugador.innerHTML = vidasJugador
-            spanvidasContri.innerHTML = vidasContri
-            resultado = " Tu -🫀"
+            resultado = " Sin daño"
             mensajeBatalla()
         }else
         if (poderesContri[cont].nombre == "💨" && ataqJugador[cont] == "💨") {
-            resultado = " Empate"
+            vidasJugador.pop()
+            resultado = " Tu -🫀"
+            spanVidaJugador.innerHTML = vidasJugador
             mensajeBatalla()
         }
     
@@ -546,9 +609,15 @@ function verificarMunicionVidas() {
 
     if (vidasJugador.length == 0 || vidasContri.length == 0) {
         if (vidasJugador > vidasContri) {
+            botones.forEach(boton => {
+                boton.hidden = true
+            });
             mensajeFinal("🇬 🇦 🇳 🇦 🇸 🎉🥳")
             return
         }else if (vidasContri > vidasJugador) {
+            botones.forEach(boton => {
+                boton.hidden = true
+            });
             mensajeFinal("🇵 🇮 🇪 🇷 🇩 🇪 🇸 😱🤬")
             return
         }
@@ -558,7 +627,7 @@ function verificarMunicionVidas() {
     ha usado los 6 ataques y ambos tienen puntos de vida asi que se deben mostrar mas botones de ataque para determinar quien gana sin
     embargo si ya utilizo los dos nuevos botones de ataque debera entrar nuevamente a la condicion es por esto que se utiliza || o para
     que evalue nuevamente si el arreglo "ataqJugador contiene mas de un item"*/
-    if (ataqJugador.length == 6 || (ataqJugador.length > 1 && turno > 6)) {
+    if (ataqJugador.length == 6 || (ataqJugador.length > 1 && turno > 5)) {
         cont = -1
         /*El arreglo "ataqJugador" se borra por completo ya que se activaran dos botones de ataque de forma aleatoria y la variable cont 
         se cambia su contenido a -1 para que de esta forma coincida el ataque del jugador que esta en lo posicion 0 y el ataque del PC*/
@@ -566,13 +635,23 @@ function verificarMunicionVidas() {
         /*"poderesContri" este arreglo se ordena de forma aleatoria para que el proximo ataque no pueda ser predeciso por el jugador*/
         poderesContri.sort(function(){return Math.random() - 0.5 });
         ind = 0
+        let copiSelec = 10
         /*En este ciclo while se activan los dos botones de ataque para que pueda continuar el juego*/
         while (ind != 2) {
             /*La variable "selec" se le asigna un numero aleatorio entre la cantidad de items que contenga el arreglo "poderes" y 0*/
             selec = Math.floor(Math.random() * ((poderes.length - 1) - 0 + 1) + 0)
-            /*Luego se toma el NodeList "botones" y se activa el boton determinado por la variable "selec" que contiene un numero aleatorio*/
-            botones[selec].hidden = false
-            ind += 1
+            /*En ocasiones el numero aleatorio que sale en la priemera ejecucion del while sale en la segunda ejecucion y esto causa
+            que solo aparesca un boton de ataque, a su vez impide que entre en el if principal ya que el arreglo "ataqJugador" seria 
+            igual a 1, no mayor, para evitar el bug en la primera ejecucion se hace una copia de la variable "selec" para compararla en la segunda
+            ejecucion si ambas variables son diferentes se muestran lo botones si no vuelve al inicio del ciclo y hace todo de nuevo hasta que
+            tome un numero diferente*/
+            if (selec != copiSelec) {
+                /*Luego se toma el NodeList "botones" y se activa el boton determinado por la variable "selec" que contiene un numero aleatorio*/
+                botones[selec].hidden = false
+                copiSelec = selec
+                ind += 1
+            }
+            
         }
        
     }
@@ -626,6 +705,135 @@ function fnReiniciar() {
 
     // Al dar click en el boton "Boton-Reiniciar" se ejecuta la recarga de la pagina
     location.reload()
+}
+
+function pintarCanvas() {
+    itemsPersonajeJugador.x = itemsPersonajeJugador.x + itemsPersonajeJugador.velocidadX
+    itemsPersonajeJugador.y = itemsPersonajeJugador.y + itemsPersonajeJugador.velocidadY
+    lienzo.clearRect(0, 0, mapa.width, mapa.height)
+    lienzo.drawImage(
+    tierraSeca,
+    0,
+    0,
+    mapa.width,
+    mapa.height
+    )
+    itemsPersonajeJugador.pintarPersonajeJugador()
+    treeProtector.pintarContrincantes()
+    venomFeather.pintarContrincantes()
+    bandido.pintarContrincantes()
+    vaqueroBandido.pintarContrincantes()
+
+    if (itemsPersonajeJugador.velocidadX !== 0 || itemsPersonajeJugador.velocidadY !== 0) {
+        colisiones(treeProtector)
+        colisiones(venomFeather)
+        colisiones(bandido)
+        colisiones(vaqueroBandido)
+
+    }
+
+    /*lienzo.drawImage(
+    itemsPersonajeJugador.mapaFoto,
+    // posicion X
+    itemsPersonajeJugador.x,
+    // posicion Y
+    itemsPersonajeJugador.y,
+    // widht
+    itemsPersonajeJugador.ancho,
+    // height
+    itemsPersonajeJugador.alto
+    )*/
+    
+}
+
+function movPerDer() {
+    itemsPersonajeJugador.velocidadX = + 5
+}
+
+function movPerHiz() {
+    itemsPersonajeJugador.velocidadX = - 5
+}
+
+function movPerAri() {
+    itemsPersonajeJugador.velocidadY = - 5
+}
+
+function movPerAbj() {
+    itemsPersonajeJugador.velocidadY = + 5
+}
+
+function detenerAccionBotones() {
+    itemsPersonajeJugador.velocidadX = 0
+    itemsPersonajeJugador.velocidadY = 0
+}
+
+function teclaPresionada(tecla) {
+    
+    switch (tecla.key) {
+        case "w":
+            movPerAri()
+            break
+
+        case "s":
+            movPerAbj()
+            break
+
+        case "a":
+            movPerHiz()
+            break
+
+        case "d":
+            movPerDer()
+            break
+
+        default:
+            break
+    }
+}
+
+function iniciarMundo() {
+    mapa.width = 800
+    mapa.height = 600
+    itemsPersonajeJugador = personajesSeleccionados()
+    intervalo = setInterval(pintarCanvas, 50)
+    /*Movimiento personaje con teclas (canvas)*/
+    window.addEventListener("keydown", teclaPresionada)
+    window.addEventListener("keyup", detenerAccionBotones)
+}
+
+function personajesSeleccionados() {
+    for (let i = 0; i < infPersonajes.length; i++) {
+        if (personajeJugador === infPersonajes[i].nombre) {
+            return infPersonajes[i]
+        }
+        
+    }
+}
+
+function colisiones(contri) {
+    /* ⇩ < ⇧ / ⇧ > ⇩ / ⇨ < ⇦ / ⇦ > ⇨ / si al evaluar todo el conjunto todas son falsas los objetos estan colisionando pero si alguna es verdadera no
+    estan colisionando*/
+
+    const arriPersonajeContrincante = contri.y
+    const abajPersonajeContrincante = contri.y + contri.alto
+    const izqPersonajeContrincante = contri.x
+    const derPersonajeContrincante = contri.x + contri.ancho
+
+    const arriPersonajeJugador = itemsPersonajeJugador.y
+    const abajPersonajeJugador = itemsPersonajeJugador.y + itemsPersonajeJugador.alto
+    const izqPersonajeJugador = itemsPersonajeJugador.x
+    const derPersonajeJugador = itemsPersonajeJugador.x + itemsPersonajeJugador.ancho
+
+    if (
+        abajPersonajeJugador < arriPersonajeContrincante ||
+        arriPersonajeJugador > abajPersonajeContrincante ||
+        derPersonajeJugador < izqPersonajeContrincante ||
+        izqPersonajeJugador > derPersonajeContrincante
+    ) {
+        return
+    }
+    detenerAccionBotones()
+    alert ("te encontraste con" + contri.nombre)
 }
 
 // window.addEventListener("load", funcion la cual quiere ejecutar) este evento recibe la informacion cuando la pagina html ha sido
