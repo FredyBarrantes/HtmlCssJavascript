@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Ar+</title>
+        <link rel="stylesheet" href="./css/styleAr+.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+
+        <section id="Escoger-Arma">
+
+            <h1 class="titulo">Ar++ 🏹🪖☠</h1>
+            
+            <h2 class="subtitulo">Escoge tu personaje</h2>
+            <div id="Div-Tarjetas-Personajes" class="Div-Tarjetas-Personajes"></div>
+
+            <h2 class="subtitulo">Escoge tu arma</h2>
+            <div id="contenedorTarjetas" class="divTarjetasArma"></div>
+            
+            <button id="Boton-Equipar">Equipar ✊</button>
+
+        </section>
+
+        <section id="activarMapa">
+            <h1 class="titulo">Ar++ 🏹🪖☠</h1>
+            <canvas id="mapa"></canvas>
+        </section>
+
+        <section id="Escoger-ataque">
+
+            <h1 class="titulo">Ar++ 🏹🪖☠</h1>
+
+            <h2 class="subtitulo">Escoge Ataque</h2>
+                
+            <div id="contenedorPoderes" ></div>
+
+
+            <div id="divBotonCascos">
+                <button id="Boton-cascos" class="botonesAtaque">🪖</button>
+            </div>
+
+            <div id="Reiniciar">
+                <button id="Boton-Reiniciar" class="botonesAtaque">🔁</button>
+            </div>
+
+        </section>
+        <section id="sectInfJugContri">
+
+            <div id="divInfJugs">
+                <h2 class="subNomJugs">Jugador</h2>
+                <span id="vida-jugador"></span>
+                <div id="DivImgSelecJugador"></div>
+                <div id="divEscudosJug"></div>
+                <p>Arma equipada: <span id="arma-jugador"></span></p>
+                <p>Ataque: <span id="ataqSelecJug"></span></p>
+                <span id="spanTurnoAtaqueJug"></span>
+                
+            </div>
+            
+
+            <div id="mensajes">
+                <h2 class="subMensajes">Pelea</h2>
+                <div id="divmensajes">
+                </div>
+            </div>
+
+            <div id="divInfJugs">
+                <h2 class="subNomJugs">Contrincante</h2>
+                <span id="vida-contrincante"></span>
+                <div id="DivImgSelecContri"></div>
+                <div id="divEscudosContri"></div>
+                <p>Arma equipada: <span id="arma-contrincante"></span></p>
+                <p>Ataque: <span id="ataqSelecContri"></span></p>
+                <span id="spanTurnoAtaqueContri"></span>
+            </div>
+
+        </section>
+
+    </body>
+
+    <script src="./js/scriptAr+.js"></script>
+
+</html>
