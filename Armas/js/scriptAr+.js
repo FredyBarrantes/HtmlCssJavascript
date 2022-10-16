@@ -95,7 +95,6 @@ let itemsPersonajeContri
 
 let heightResp
 let mapWidth = window.innerWidth - 20
-console.log(mapWidth)
 const maxWidthMap = 800
 if (mapWidth > maxWidthMap) {
     mapWidth = maxWidthMap - 20
@@ -313,6 +312,21 @@ function iniciarJuego() {
 
     botonReiniciar.addEventListener("click", fnReiniciar)
 
+    unirseJuego()
+
+}
+
+function unirseJuego() {
+    fetch("http://127.0.0.1:8080/unirse")
+        .then(function(res) {
+            console.log(res)
+            if (res.ok) {
+                res.text()
+                    .then(function (respuesta) {
+                        console.log(respuesta)
+                    })
+            }
+        })
 }
 
 function seleccArmaJugador() {
