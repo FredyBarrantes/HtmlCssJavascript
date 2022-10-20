@@ -83,15 +83,24 @@ let escudosJug = []
 let escudosContri = []
 
 //Variables canvas
+/*La funcion .getContext("2d") es usada para tener acceso a las funciones de dibujado de el tag 2d (dibujar en el canvas)*/
 let lienzo = mapa.getContext("2d")
 let intervalo
+/*"tierraSeca" es utilizada para indicar que esta variable guardara una imagen que luego sera usada en el canvas*/
 let tierraSeca = new Image()
 tierraSeca.src = "./img/mapas/mapTierraSeca.png"
 let personajeJugador
+/*"itemsPersonajeJugador" esta variable guardara la info de la clase del personaje seleccionado por el jugador*/
 let itemsPersonajeJugador
+/*"infContrincante" este arreglo esta asociado a la clase "PersonajesContriNat" guarda la info de los objetos*/
 let infContrincante = []
+/*"infContriHum" este arreglo esta asociado a la clase "PersonajesContriHum" guarda la info de los objetos*/
 let infContriHum = []
+/*"itemsPersonajeContri" esta variable guarda la info de la clase del oponente el cual es escogido en la colision*/
 let itemsPersonajeContri
+
+/* Variables backend*/
+let jugadorID = null
 
 let heightResp
 let mapWidth = window.innerWidth - 20
@@ -317,13 +326,21 @@ function iniciarJuego() {
 }
 
 function unirseJuego() {
+    /*Se envia una peticion al servidor con la funcion "fetch", envia las llamadas mediante http, permite indicar asi que URI, tambien permite indicar
+    el metodo que queremos llamar, por defecto toma "get" pero se puede especificar cual usar como "post", si es la ultima se puede enviar los datos
+    que van a traves de esa peticion. "Fetch" puede tardar en responder, conocido como peticion asincrona, no se sabe cuando se recivira la respuesta*/
     fetch("http://127.0.0.1:8080/unirse")
+    /*".then" esta propiedad la tienen todas las funciones asincronas, recive una funcion la cual es un callback, se ejecutara una ves se halla resuelto
+    la respuesta del servidor. Como primer argumentos se recive la respuesta "res"*/
         .then(function(res) {
-            console.log(res)
+            /*"if (res.ok)" se evalua si todo ha salido bien*/
             if (res.ok) {
+                /*"res.text()" se solicita que devuelva un texto con el "id"*/
                 res.text()
                     .then(function (respuesta) {
                         console.log(respuesta)
+                        /*Se asigna el valor de la respuesta del servidor es decir el ID que se le ha asignado al jugador */
+                        jugadorID = respuesta
                     })
             }
         })
@@ -383,10 +400,11 @@ function seleccArmaJugador() {
         alert("Debes dar click sobre algun arma.")
     }
 
-    iniciarMundo()
+    perSelecJug(personajeJugador)
 
-    /*Si el jugador a seleccionado un personaje y un arma se ejecutaran las funciones "extraerPoderes" y "seleccArmaContri" de lo
-    contrario enviara los alert indicando que debe escoger un personaje o un arma*/
+    iniciarMundo()
+    /*Si el jugador a seleccionado un personaje y un arma se ejecutaran las funciones "extraerPoderes" y "secAtaque" de lo contrario enviara alerts 
+    indicando que debe escoger un personaje o un arma*/
     if (act1 == 1 && act2 == 1) {
         extraerPoderes(armaJugador)
         secAtaque()
@@ -397,6 +415,35 @@ function seleccArmaJugador() {
         // muestra las vidas del jugador en html mediante la constante "spanVidaJugador"
         spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
     }
+}
+
+function perSelecJug(argPersonajeJugador) {
+    /*Se utiliza "fetch" con "post". Se llama la URL pero al servicio creado en "armasindex.js" /personaje/se inserta el Id del jugador. Para crearlo se 
+    utiliza la sintaxis "template string" esta sintaxis inicia con `` comilla invertida, al poner el simbolo de "$" junto a "{}" dentro se puede poner
+    una variable, con esto ya se ha unido la URL con el Id del jugador asi que es igual a lo que esta en el servicio "armasindex.js"
+    "/personaje/:jugadorID"*/
+    /*Se agrega un segundo parametro a la funcion de fetch que sea un objeto json de configuracion donde se agrega el el metodo "method"*/
+    fetch(`http://127.0.0.1:8080/personaje/${jugadorID}`, {
+        /*"method: "post", se agrega con una cadena de texto "post" asi se indica que se enviara con una peticion tipo "post"*/
+        method: "post",
+        /*Se indica que tipo de dato se enviara y los datos que se enviaran, para el tipo de dato se utilizara las cabeceras "headers", estos son 
+        metadatos. El tipo de "header" a utilizar es "Content-Type" => clave. Con "application/json" se le indica a javascript que se utilizara un
+        objeto json. => valor*/
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        /*Se agrega el valor que se enviara hacia el servidor. En este caso se utiliza el cuerpo "body" de la aplicacion. "body" para el estandar de fetch
+        debe ser una cadena de texto. como se esta enviando un jason se toma y es convertido a cadena de texto*/
+        body: JSON.stringify({
+            /*Dentro de esta funcion se pone el objeto json la informacion que se enviara al backend, en este caso se enviara el nombre del personaje
+            elegido por el jugador.
+            El nombre "personaje" debe ser igualmente nombrado en el servicio "app.post("/personaje/:jugadorID","*/
+            personaje: argPersonajeJugador
+            /*no es necesario terminar la solicituid  "res.end()" ni ".then" ya que se esta enviando info.
+            "Jugador ID" no se ha declarado, se crea una variable global al inicio del script. En la funcion "unirseJuego()" en la respuesta que se 
+            obtiene del servidor es decir el Id del jugador se asigna a la variable "jugadorID"*/
+        })
+    })
 }
 
 /*La funcion "extraerPoderes" entra al arreglo "infArmas" y toma cada item, lo compara con lo que contiene la variable "armaJugador"
@@ -744,10 +791,15 @@ function fnReiniciar() {
     location.reload()
 }
 
+/*En esta funcion se indica que debe dibujar el mapa y los personajes*/
 function pintarCanvas() {
+    /*En esta seccion se actualiza la posicion del jugar en X y en Y */
     itemsPersonajeJugador.x = itemsPersonajeJugador.x + itemsPersonajeJugador.velocidadX
     itemsPersonajeJugador.y = itemsPersonajeJugador.y + itemsPersonajeJugador.velocidadY
+    /*"clearRect" este comando borra o actualiza el canvas esto es util para el movimiento o animacion dentre del canvas, de esta forma no deja rastro*/
     lienzo.clearRect(0, 0, mapa.width, mapa.height)
+    /*"lienzo" esta variable es la que dibuja en el canvas, en este caso se indica que debe dibujar la imagen guardada en la variable "tierraSeca"
+    que inicia en la posicion 0 de X y de Y , el ancho y el alto que ya tiene la propia imagen*/
     lienzo.drawImage(
     tierraSeca,
     0,
@@ -755,12 +807,19 @@ function pintarCanvas() {
     mapa.width,
     mapa.height
     )
+    /*"pintarPersonajeJugador" esta funcion se encuantra dentro de las clases de los personajes y es llamada desde aqui para que dibuje en el canvas
+    los personajes*/
     itemsPersonajeJugador.pintarPersonajeJugador()
+
+    enviarPosBE(itemsPersonajeJugador.x, itemsPersonajeJugador.y)
+
     treeProtector.pintarContrincantes()
     venomFeather.pintarContrincantes()
     bandido.pintarContrincantes()
     vaqueroBandido.pintarContrincantes()
 
+    /*Se evalua si el personaje esta en moviemiento, si lo esta quiere decir que puede existir colision por este motivo se envia info a la funcion
+    "colisiones" cada ves que el jugador se mueva*/
     if (itemsPersonajeJugador.velocidadX !== 0 || itemsPersonajeJugador.velocidadY !== 0) {
         colisiones(treeProtector)
         colisiones(venomFeather)
@@ -783,6 +842,20 @@ function pintarCanvas() {
     
 }
 
+function enviarPosBE(x, y) {
+    fetch(`http://127.0.0.1:8080/coordenadas/${jugadorID}/posicion`, {
+        method: "post",
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body: JSON.stringify({
+            x,
+            y
+        })
+    })
+}
+
+/*En esta seccion hay 5 funciones las cuales sirven para sumar o restar en 5 la velocidad en X y en Y, la ultima funcion detiene el movimiento*/
 function movPerDer() {
     itemsPersonajeJugador.velocidadX = + 5
 }
@@ -804,6 +877,8 @@ function detenerAccionBotones() {
     itemsPersonajeJugador.velocidadY = 0
 }
 
+/*"teclaPresionada" esta funcion identifica si las teclas evaluadas han sido presionadas, si es el caso dependiendo de la tecla envia señal a las funciones
+arriba mencionadas*/
 function teclaPresionada(tecla) {
     
     switch (tecla.key) {
@@ -828,16 +903,22 @@ function teclaPresionada(tecla) {
     }
 }
 
+/*"iniciarMundo" esta funcion es iniciada por la funcion "seleccArmaJugador"*/
 function iniciarMundo() {
     /*mapa.width = 800
     mapa.height = 600*/
+    /*"itemsPersonajeJugador" esta variable contiene la informacion del personaje seleccionado por el jugador*/
     itemsPersonajeJugador = personajesSeleccionados()
+    /*"setInterval" este metodo pone un intervalo cada cierto tiempo y ejecuta alguna accion, en este caso actualiza la funcion "pintarCanvas" cada
+    50 milisegundos*/
     intervalo = setInterval(pintarCanvas, 50)
-    /*Movimiento personaje con teclas (canvas)*/
+    /*Estos dos eventos de escucha sirven para que cuando el jugador oprima una tecla la info sea enviada a la funcion "teclaPresionada" o "detenerAccionBotones"*/
     window.addEventListener("keydown", teclaPresionada)
     window.addEventListener("keyup", detenerAccionBotones)
 }
 
+/*"personajesSeleccionados" en esta funcion se envia la info del personaje seleccionado por el jugador a la funcion que la solicite. "iniciarMundo" es 
+la funcion que llama a esta*/
 function personajesSeleccionados() {
     for (let i = 0; i < infPersonajes.length; i++) {
         if (personajeJugador === infPersonajes[i].nombre) {
@@ -851,6 +932,9 @@ function colisiones(contri) {
     /* ⇩ < ⇧ / ⇧ > ⇩ / ⇨ < ⇦ / ⇦ > ⇨ / si al evaluar todo el conjunto todas son falsas los objetos estan colisionando pero si alguna es verdadera no
     estan colisionando*/
 
+    /*para determinar en que pixel inicia la imagen se debe llamar a y, para saber en que pixel termina la imagen en ese mismo eje "y" se suma su altura
+    con la posicion en "y", lo mismo pasa para evaluar el ancho, se captura el pixel de inicio pero ahora en el eje "x" y se suma el ancho de la imagen
+    con la posicion en "x"*/
     const arriPersonajeContrincante = contri.y
     const abajPersonajeContrincante = contri.y + contri.alto
     const izqPersonajeContrincante = contri.x
