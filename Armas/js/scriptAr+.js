@@ -400,7 +400,7 @@ function seleccArmaJugador() {
         alert("Debes dar click sobre algun arma.")
     }
 
-    perSelecJug(personajeJugador)
+    perSelecJug(personajeJugador, armaJugador)
 
     iniciarMundo()
     /*Si el jugador a seleccionado un personaje y un arma se ejecutaran las funciones "extraerPoderes" y "secAtaque" de lo contrario enviara alerts 
@@ -417,7 +417,7 @@ function seleccArmaJugador() {
     }
 }
 
-function perSelecJug(argPersonajeJugador) {
+function perSelecJug(argPersonajeJugador,argArmaJugador) {
     /*Se utiliza "fetch" con "post". Se llama la URL pero al servicio creado en "armasindex.js" /personaje/se inserta el Id del jugador. Para crearlo se 
     utiliza la sintaxis "template string" esta sintaxis inicia con `` comilla invertida, al poner el simbolo de "$" junto a "{}" dentro se puede poner
     una variable, con esto ya se ha unido la URL con el Id del jugador asi que es igual a lo que esta en el servicio "armasindex.js"
@@ -435,10 +435,11 @@ function perSelecJug(argPersonajeJugador) {
         /*Se agrega el valor que se enviara hacia el servidor. En este caso se utiliza el cuerpo "body" de la aplicacion. "body" para el estandar de fetch
         debe ser una cadena de texto. como se esta enviando un jason se toma y es convertido a cadena de texto*/
         body: JSON.stringify({
-            /*Dentro de esta funcion se pone el objeto json la informacion que se enviara al backend, en este caso se enviara el nombre del personaje
-            elegido por el jugador.
+            /*Dentro de esta funcion se pone el objeto json la informacion que se enviara al backend, en este caso se enviara el nombre y el arma del 
+            personaje elegido por el jugador.
             El nombre "personaje" debe ser igualmente nombrado en el servicio "app.post("/personaje/:jugadorID","*/
-            personaje: argPersonajeJugador
+            personaje: argPersonajeJugador,
+            arma: argArmaJugador
             /*no es necesario terminar la solicituid  "res.end()" ni ".then" ya que se esta enviando info.
             "Jugador ID" no se ha declarado, se crea una variable global al inicio del script. En la funcion "unirseJuego()" en la respuesta que se 
             obtiene del servidor es decir el Id del jugador se asigna a la variable "jugadorID"*/

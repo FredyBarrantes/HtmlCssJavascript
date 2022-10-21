@@ -28,8 +28,9 @@ class Jugador{
 
 /*Se crea la clase "Personajes" */
 class Personajes {
-    constructor(nombre) {
+    constructor(nombre, arma) {
         this.nombre = nombre
+        this.arma = arma
     }
 }
 
@@ -61,17 +62,17 @@ app.post("/personaje/:jugadorID", function (req, res) {
     /*se crea la constante "nomPersonaje" y se extrae del body enviado en el objeto json , se debe emplear la misma variable creada en el script
     "personaje: argPersonajeJugador" si no llega info se llena con un string vacio*/
     const nomPersonaje = req.body.personaje || ""
+    const nomArma = req.body.arma || ""
     /*Se crea un objeto nuevo en la clase "Personajes" como argumento recibe el nombre que se extrajo del "body" objeto "json" */
-    const personaje = new Personajes(nomPersonaje)
+    const personaje = new Personajes(nomPersonaje, nomArma)
     /*Se busca el jugador asiciado al ID en la lista "players" creando una constante que obtendra la lista de jugadores, al buscar el jugador en la lista
     puede que este o no, primero se debe validar por medio de la funcion "findIndex" esta busca en la lista algun elemento que cumpla una condicion
-    si este elemento devolvera su numero de indexado, si no existe regresa -1, si se tiene un numero mayor a 0 existe.*/
+    si este elemento se encuentra devolvera su numero de indexado, si no existe regresa -1, si se tiene un numero mayor a 0 existe.*/
     const playerIndex = players.findIndex((player) => jugadorID === player.id)
     if (playerIndex >= 0) {
         players[playerIndex].asignarPersonaje(personaje)
     }
     console.log(players)
-    console.log(jugadorID)
     /*se termina la peticion para que no quede cargando en el navegador "res.end()"*/
     res.end()
 })
