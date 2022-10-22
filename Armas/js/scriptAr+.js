@@ -116,7 +116,7 @@ mapa.height = heightResp
 
 // Inicia seccion class Personajes
 class Personajes {
-    constructor(nombre, vida, imagen, ind, x = 340, y = 350, ancho, alto) {
+    constructor(nombre, vida, imagen, ind, x, y, ancho, alto, id = null) {
         this.nombre = nombre
         this.vida = vida
         this.imagen = imagen
@@ -125,6 +125,7 @@ class Personajes {
         this.y = y
         this.ancho = ancho
         this.alto = alto
+        this.id = id
         this.mapaFoto = new Image()
         this.mapaFoto.src = imagen
         this.velocidadX = 0
@@ -146,8 +147,8 @@ class Personajes {
     }
 }
 
-let vaquero = new Personajes("Vaquero🤠", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/vaquero.png", 0, 340, 350, 25, 50)
-let soldado = new Personajes("Soldado🪖", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/soldado.png", 1, 340, 350, 50, 50)
+let vaquero = new Personajes("Vaquero🤠", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/vaquero.png", 0, 320, 350, 25, 50)
+let soldado = new Personajes("Soldado🪖", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/soldado.png", 1, 360, 350, 50, 50)
 
 infPersonajes.push(vaquero, soldado)
 // Finaliza seccion class Personajes
@@ -507,7 +508,7 @@ jugador a oprimido algun boton con la funcion "e" la cual ingresa al evento y re
 determinar cual ataque ha escogido el jugador envia el ataque al arreglo "ataqJugador", luego oculta el boton y sigue la ejecucion
 en la funcion lucha*/
 function secAtaque() {
-    botones.forEach((boton)=> {
+    botones.forEach((boton) => {
         boton.addEventListener("click", (e) => {
             if(e.target.textContent === "🔥") {
                 ataqJugador.push("🔥")
@@ -853,6 +854,35 @@ function enviarPosBE(x, y) {
             x,
             y
         })
+    })
+    /*Se utiliza ".then" para recibir lo que ha enviado el servidor en este caso una lista empaquetada en un objeto json la cual contiene una lista que a su ves contiene id, nombre, armas, la posicion x, y */
+    .then(function (res) {
+        if(res.ok) {
+            /*Se indica que la respuesta del servidor viene empaquetada en on objeto json con "res.json()"*/
+            res.json()
+            /*Como "res.json()" es una promesa por eso se utiliza ".then" el cual recibe una funcion en este caso se utiliza una sintaxis de javascript donde se utilizan las llaves "{}"dentro de estas se pone en este caso la lista que envio el servidor debe ser el mismo nobre en este caso es "oponentes"*/
+                .then(function ({ oponentes }) {
+                    console.log(oponentes)
+                    /*Se recorrera la lista "oponentes" por cada personaje de la lista que personaje escogio el/los demas jugadores, dependiendo que personaje ha escogido es el objeto que se creara en la clase "Personajes"*/
+                    oponentes.forEach(function (itemLista) {
+                        let personajeOponente = null
+                        /*se crea una constante "personajeNombre" para guardar en ella el nombre que se extrae con "itemLista.personaje.nombre"*/
+                        const personajeNombre = itemLista.personaje.nombre || ""
+                        /*se inicia condicionales para saber que tipo de personaje se debe crear en la clase "Personajes" y dibujar en el canvas*/
+                        if (personajeNombre === "Vaquero🤠") {
+                            personajeOponente = new Personajes("Vaquero🤠", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/vaquero.png", 0, 340, 350, 25, 50)
+                        }else if (personajeNombre === "Soldado🪖") {
+                            personajeOponente = new Personajes("Soldado🪖", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/soldado.png", 1, 360, 350, 50, 50)
+                        }
+
+                        /*se actualizan las coordenas x, y, mediante el item que se encuentra en la lista "oponentes" el cual contiene las coordenadas actualizadas del jugador oponente"*/
+                        personajeOponente.x = itemLista.x
+                        personajeOponente.y = itemLista.y
+                        personajeOponente.pintarPersonajeJugador()
+
+                    })
+                })
+        }
     })
 }
 

@@ -51,6 +51,7 @@ app.get("/unirse", (req, res) => {
 
     res.send(id) 
 })
+
 /*Se usa la peticion tipo post porque se va a recibir datos en jason
 se pone un nombre al servicio en este caso "personaje". "/personaje/" se crea una variable tipo parametro ":jugadorID", esta variable viene en la URL
  en la peticion, en este caso obtendra el Id del jugador que esta seleccionando al personaje*/
@@ -86,8 +87,19 @@ app.post("/coordenadas/:jugadorID/posicion", (req, res) => {
     if (playerIndex >= 0) {
         players[playerIndex].actPosicion(x, y)
     }
+
+    /*Para recibir las coordenas de los demas jugadores y devolver las coordenadas de los otros jugadores eceptuando la del propio jugador, comenzamos
+    filtrando todos los jugadores menos el actual. El metodo "filter" permite ejecutar sobre las listas un filtro recibiendo una funcion en el cual se 
+    agraga un argumento que sera un elemento de la lista, en el cuerpo de la funcion se hace la comparacion lo que devuelve verdadero o falso */
+    const oponentes = players.filter((player) => jugadorID !== player.id)
+
     console.log(players)
-    res.end()
+    console.log(oponentes)
+    /*Mediante "res.send" se devuelven a traves de la respuesta de esta peticion, se crea un objeto json ya que en express solo se pueden devolver esos
+    objetos*/
+    res.send({
+        oponentes
+    })
 })
 /* app.listen(8080, () => {
     console.log("Servidor On")
