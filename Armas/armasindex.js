@@ -11,6 +11,8 @@ app.use(cors())
 app.use(express.json())
 
 const players = []
+/*"jugadoresCombate" en esta lista se guarda el id de los jugadores que entraron en combate */
+let jugadoresCombate = []
 
 class Jugador{
     constructor(id) {
@@ -23,6 +25,12 @@ class Jugador{
     actPosicion(x, y) {
         this.x = x
         this.y = y
+    }
+    asignarPoderes(poder) {
+        this.poder = poder
+    }
+    asignarVidasIni(vidasIni) {
+        this.vidasIni = vidasIni
     }
 }
 
@@ -43,13 +51,13 @@ app.get("/unirse", (req, res) => {
 
     players.push(jugador)
 
-    /*Se agrega una cabecera, esta tiene metadatos que los sistemas web utilizan para recivir info sobre configuraciones,que tipo de coneccion aceptan
+    /*Se agrega una cabecera, esta tiene metadatos que los sistemas web utilizan para recibir info sobre configuraciones,que tipo de coneccion aceptan
     etc. "Access-Control-Allow-Origin" esto es un error que se genera porque cuando se tiene un servidor como "localhost:8080" lo seguro es que las peticiones
     que vengan estan alojadas en el mismo sitio pero en este caso se esta abriendo un archivo que no pertenece al servidor por este lo marca como
     inseguro*/
     //res.setHeader("Access-Control-Allow-Origin", "scriptAr+.js") 
 
-    res.send(id) 
+    res.send(id)
 })
 
 /*Se usa la peticion tipo post porque se va a recibir datos en jason
@@ -73,7 +81,6 @@ app.post("/personaje/:jugadorID", function (req, res) {
     if (playerIndex >= 0) {
         players[playerIndex].asignarPersonaje(personaje)
     }
-    console.log(players)
     /*se termina la peticion para que no quede cargando en el navegador "res.end()"*/
     res.end()
 })
@@ -82,7 +89,6 @@ app.post("/coordenadas/:jugadorID/posicion", (req, res) => {
     const jugadorID = req.params.jugadorID || ""
     const x = req.body.x || 0
     const y = req.body.y || 0
-    console.log(x, y)
     const playerIndex = players.findIndex((player) => jugadorID === player.id)
     if (playerIndex >= 0) {
         players[playerIndex].actPosicion(x, y)
@@ -93,14 +99,61 @@ app.post("/coordenadas/:jugadorID/posicion", (req, res) => {
     agraga un argumento que sera un elemento de la lista, en el cuerpo de la funcion se hace la comparacion lo que devuelve verdadero o falso */
     const oponentes = players.filter((player) => jugadorID !== player.id)
 
-    console.log(players)
-    console.log(oponentes)
     /*Mediante "res.send" se devuelven a traves de la respuesta de esta peticion, se crea un objeto json ya que en express solo se pueden devolver esos
     objetos*/
     res.send({
         oponentes
     })
 })
+
+/*Se recibe el poder seleccionado por el jugador*/
+app.post("/poderSelec/:jugadorId", (req, res) => {
+    console.log("--- por seleccionado ---")
+    const jugadorID = req.params.jugadorId || ""
+    const nomPoder = req.body.poder || ""
+    const IdJugadorContri = req.body.IdContri || ""
+
+    const jugadorIndex = players.findIndex((jugador) => jugadorID === jugador.id)
+    if (jugadorIndex >= 0) {
+        players[jugadorIndex].asignarPoderes(nomPoder)
+    }
+    console.log(players)
+    const ind = players.findIndex((jugador) => IdJugadorContri === jugador.id)
+    let ataqueContri = null
+    if (ind >= 0) {
+        ataqueContri = players[ind].poder
+    }
+
+    console.log("Ataques jugador contrincante: ", ataqueContri)
+
+    res.end()
+})
+
+/*Se recibe id de los jugadores para guardarlos en una lista y de forma aleatoria establecer quien inicia atacando, luego el id del ganador se envia al frontend*/
+app.post("/jugadorIniciaPartida/:jugadorID/", (req, res) => {
+    console.log("Cliente envia id")
+    const jugadorID = req.params.jugadorID || ""
+    
+    /*"jugadoresCombate" esta lista esta declarada globalmente. Se ingresan los id's de los jugadores que han entrado en combate*/
+    jugadoresCombate.push(jugadorID)
+    console.log("jugadores que entraron en combate", jugadoresCombate)
+
+    if (jugadoresCombate.length === 2) {
+        console.log("Cantidad objetos en jugadoresCombate", jugadoresCombate.length)
+        /*Se itera en la lista "jugadoresCombate", de manera aleatoria se escoge la posicion y se devuelve a la variable "ind" */
+        let ind = Math.floor(Math.random() * ((jugadoresCombate.length - 1) - 0 + 1) + 0)
+        /*"jugadorInicia" en esta variable se guarda el id del jugador escogido de manera aleatoria*/
+        let jugadorInicia = jugadoresCombate[ind]
+        console.log("Jugador que inicia combate", jugadorInicia)
+
+        /*Se envia el id del jugador al frontend*/
+        res.send({
+            jugIni: jugadorInicia })
+
+    }
+
+})
+
 /* app.listen(8080, () => {
     console.log("Servidor On")
 })

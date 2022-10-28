@@ -101,6 +101,9 @@ let itemsPersonajeContri
 
 /* Variables backend*/
 let jugadorID = null
+let PersonajesOponentes = []
+let jugadorOponenteID = null
+let firstTime = null
 
 let heightResp
 let mapWidth = window.innerWidth - 20
@@ -116,10 +119,10 @@ mapa.height = heightResp
 
 // Inicia seccion class Personajes
 class Personajes {
-    constructor(nombre, vida, imagen, ind, x, y, ancho, alto, id = null) {
+    constructor(nombre, vida, img, ind, x, y, ancho, alto, id = null) {
         this.nombre = nombre
         this.vida = vida
-        this.imagen = imagen
+        this.img = img
         this.ind = ind
         this.x = x
         this.y = y
@@ -127,7 +130,7 @@ class Personajes {
         this.alto = alto
         this.id = id
         this.mapaFoto = new Image()
-        this.mapaFoto.src = imagen
+        this.mapaFoto.src = img
         this.velocidadX = 0
         this.velocidadY = 0
     }
@@ -286,7 +289,7 @@ function iniciarJuego() {
         opcionPersonajes = `
         <input type="radio" name="Escoge-Personaje" id=${Personajes.nombre} />
         <label for=${Personajes.nombre}>
-            <img src=${Personajes.imagen} alt=${Personajes.nombre} class=${"img"+Personajes.nombre} />
+            <img src=${Personajes.img} alt=${Personajes.nombre} class=${"img"+Personajes.nombre} />
         </label>
         `
         DivTarjetasPersonajes.innerHTML += opcionPersonajes
@@ -313,9 +316,9 @@ function iniciarJuego() {
         veriSelec3 = document.getElementById("Fusil")
     })
 
-    // "spanTurnoAtaqueJug" y "spanTurnoAtaqueContri" llaman al elemento por el id en html y escribe lo que esta entre comillas
+    /*"spanTurnoAtaqueJug" y "spanTurnoAtaqueContri" llaman al elemento por el id en html y escribe lo que esta entre comillas
     spanTurnoAtaqueJug.innerHTML = "⚔"
-    spanTurnoAtaqueContri.innerHTML = "🛡"
+    spanTurnoAtaqueContri.innerHTML = "🛡"*/
 
     // Se llama la variable (botonEquipar) y se añade que si el jugador ha hecho click ejecute la funcion "seleccArmaJugador"
     botonEquipar.addEventListener("click", seleccArmaJugador)
@@ -359,7 +362,7 @@ function seleccArmaJugador() {
         spanVidaJugador.innerHTML = vaquero.vida
         /*Se inserta la mini-imagen en html con la info que se encuentra en el arreglo "infPersonajes" en este caso se indica con un cero
         la cual es la posicion del vaquero */
-        DivImgSelecJugador.innerHTML = `<img src=${infPersonajes[0].imagen} alt=${infPersonajes[0].nombre} class=${"mini-img"+infPersonajes[0].nombre} />`
+        DivImgSelecJugador.innerHTML = `<img src=${infPersonajes[0].img} alt=${infPersonajes[0].nombre} class=${"mini-img"+infPersonajes[0].nombre} />`
         /*Se cambia el contenido de la variable "act2" por 1 para indicar que el jgador ya ha seleccionado un personaje*/
         act2 = 1
     }else if (inputIdSoldado.checked) {
@@ -368,7 +371,7 @@ function seleccArmaJugador() {
         inclusive si el jugador y el pc utilizan el mismo elemento en el ataque y en la defensa es decir un empate*/
         divEscudosJug.innerHTML = escudosJug
         divEscudosContri.innerHTML = escudosContri
-        DivImgSelecJugador.innerHTML = `<img src=${infPersonajes[1].imagen} alt=${infPersonajes[1].nombre} class=${"mini-img"+infPersonajes[1].nombre} />`
+        DivImgSelecJugador.innerHTML = `<img src=${infPersonajes[1].img} alt=${infPersonajes[1].nombre} class=${"mini-img"+infPersonajes[1].nombre} />`
         act2 = 1
     }else {
         alert("Debes escoger a un personaje")
@@ -408,7 +411,7 @@ function seleccArmaJugador() {
     indicando que debe escoger un personaje o un arma*/
     if (act1 == 1 && act2 == 1) {
         extraerPoderes(armaJugador)
-        secAtaque()
+        //secAtaque()
         // Oculta la seccion Escoger-Arma en html
         sectEscogerArma.style.display = "none"
         // activa la seccion donde se encuentra el canvas
@@ -423,7 +426,7 @@ function perSelecJug(argPersonajeJugador,argArmaJugador) {
     utiliza la sintaxis "template string" esta sintaxis inicia con `` comilla invertida, al poner el simbolo de "$" junto a "{}" dentro se puede poner
     una variable, con esto ya se ha unido la URL con el Id del jugador asi que es igual a lo que esta en el servicio "armasindex.js"
     "/personaje/:jugadorID"*/
-    /*Se agrega un segundo parametro a la funcion de fetch que sea un objeto json de configuracion donde se agrega el el metodo "method"*/
+    /*Se agrega un segundo parametro a la funcion de  que sea un objeto json de configuracion donde se agrega el metodo "method"*/
     fetch(`http://127.0.0.1:8080/personaje/${jugadorID}`, {
         /*"method: "post", se agrega con una cadena de texto "post" asi se indica que se enviara con una peticion tipo "post"*/
         method: "post",
@@ -493,6 +496,7 @@ function seleccArmaContri(contri) {
     // sort(function(){return Math.random() - 0.5 }) esta parte del codigo ordena de forma aleatoria el arreglo
     poderesContri.sort(function(){return Math.random() - 0.5 });
 
+    console.log(contri)
     // Se escribe la imagen con la que ha colisionado en el mapa (canvas), en el apartado contrincante
     DivImgSelecContri.innerHTML = `<img src=${contri.img} alt=${contri.nombre} class=${"mini-img"+contri.nombre} />`
 
@@ -501,13 +505,16 @@ function seleccArmaContri(contri) {
     // Muestra el div donde aparecen los mensajes
     divMensajes.style.display = "flex"
 
+    secAtaqueContraPC()
+
 }
 
-/*La funcion "secAtaque" ingresa al NodeList "botones" y cada item lo guarda en "boton", se crea el evento de escucha para cuando el
+/*La funcion "secAtaqueContraPC" ingresa al NodeList "botones" y cada item lo guarda en "boton", se crea el evento de escucha para cuando el
 jugador a oprimido algun boton con la funcion "e" la cual ingresa al evento y revisa si el "textContent" es igual a algun ataque, al
 determinar cual ataque ha escogido el jugador envia el ataque al arreglo "ataqJugador", luego oculta el boton y sigue la ejecucion
-en la funcion lucha*/
-function secAtaque() {
+en la funcion lucha.
+Esta funcion se ejecuta cuando el jugador a colicionado contra un npc*/
+function secAtaqueContraPC() {
     botones.forEach((boton) => {
         boton.addEventListener("click", (e) => {
             if(e.target.textContent === "🔥") {
@@ -689,6 +696,41 @@ function lucha() {
     }*/
 }
 
+/*"secAtaqueContraJugador" esta funcion sirve para enviar los ataques escogidos por el jugador a la funcion "enviarAtaquesBE"*/
+function secAtaqueContraJugador() {
+    botones.forEach((boton) => {
+        boton.addEventListener("click", (e) => {
+            if(e.target.textContent === "🔥") {
+                boton.hidden = true
+                enviarAtaquesBE("🔥")
+            }else if(e.target.textContent === "🌊") {
+                boton.hidden = true
+                enviarAtaquesBE("🌊")
+            }else {
+                boton.hidden = true
+                enviarAtaquesBE("💨")
+            }
+        })
+    })
+}
+
+/*La funcion "enviarAtaquesBE" enviara la vida inicial y el ataque escogido por el jugador al backend, tambien recibira la actualizacion de los puntos de vida 
+tanto del jugador oponente como del mismo*/
+function enviarAtaquesBE(argPoder) {
+    fetch(`http://127.0.0.1:8080/poderSelec/${jugadorID}`, {
+        method: "post",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            poder: argPoder,
+            IdContri: jugadorOponenteID
+        })
+    })
+    verificarMunicionVidas()
+    mostrarTurno()
+}
+
 function verificarMunicionVidas() {
 
     turno += 1
@@ -746,17 +788,43 @@ function verificarMunicionVidas() {
 
 /*La funcion "mostrarTurno" se utiliza para mostrar en html quien de los dos jugadores debe atacar si el jugador o el PC*/
 function mostrarTurno() {
+    if (firstTime !== 0) {
+        /*Si la variable "turno" contiene un numero par su residuo sera 0 por lo tanto el turno de atacar es del jugador si no es turno del PC*/
+        if (turno % 2 == 0) {
+            botones.forEach(boton => {
+                boton.display.disable = false
+            })
+            spanTurnoAtaqueJug.innerHTML = "🛡"
+            spanTurnoAtaqueContri.innerHTML = "⚔"
+        }else {
+            botones.forEach(boton => {
+                boton.display.disable = true
+            })
+            spanTurnoAtaqueJug.innerHTML = "⚔"
+            spanTurnoAtaqueContri.innerHTML = "🛡"
+            
+        }
+    }
+    firstTime = 1
+    
+}
 
-    /*Si la variable "turno" contiene un numero par su residuo sera 0 por lo tanto el turno de atacar es del jugador si no es turno del PC*/
-    if (turno % 2 == 0) {
-        spanTurnoAtaqueJug.innerHTML = "🛡"
-        spanTurnoAtaqueContri.innerHTML = "⚔"
-    }else {
+function turnoAtaqueInicial (argjugadorIniComb) {
+    if (argjugadorIniComb === jugadorID) {
+        console.log("jugador escogido para iniciar", argjugadorIniComb, "es igual al jugador", jugadorID)
+        turno = 0
         spanTurnoAtaqueJug.innerHTML = "⚔"
         spanTurnoAtaqueContri.innerHTML = "🛡"
-        
+    }else {
+        turno = 1
+        spanTurnoAtaqueJug.innerHTML = "🛡"
+        spanTurnoAtaqueContri.innerHTML = "⚔"
+        botones.forEach(boton => {
+            boton.display.disable = true
+        })
     }
-    
+    firstTime = 0
+    secAtaqueContraJugador()
 }
 
 function mensajeBatalla() {
@@ -774,6 +842,10 @@ function mensajeBatalla() {
     let parrafo2 = document.createElement("p")
     parrafo2.innerHTML = resultado
     secMensaje.appendChild(parrafo2)
+}
+
+function mensajeBatallaVs() {
+
 }
 
 function mensajeFinal(menfin) {
@@ -813,8 +885,18 @@ function pintarCanvas() {
     los personajes*/
     itemsPersonajeJugador.pintarPersonajeJugador()
 
+    /*Se envia la posicion del jugador en x, y, al backend*/
     enviarPosBE(itemsPersonajeJugador.x, itemsPersonajeJugador.y)
 
+    /*como se quiere evitar el parpadeo de las imagenes y la variable "PersonajesOponentes" ya contiene la info de los otros jugadores, se pintan en canvas */
+    PersonajesOponentes.forEach(function (itemLista) {
+        itemLista.pintarPersonajeJugador()
+        /*Se envia "itemLista" a la funcion "colisiones" para que verifique si existe colision entre jugadores, entonces se abra la pantalla de combate*/
+        colisiones(itemLista)
+    })
+
+    /*Dejo estos enemigos porque son los "npc's", se deben pintar en canvas. El "if" mas abajo tambien lo dejo ya que es necesario que se verifique si existe 
+    colision entre algun jugador y un npc*/
     treeProtector.pintarContrincantes()
     venomFeather.pintarContrincantes()
     bandido.pintarContrincantes()
@@ -852,33 +934,44 @@ function enviarPosBE(x, y) {
         },
         body: JSON.stringify({
             x,
-            y
+            y,
         })
     })
-    /*Se utiliza ".then" para recibir lo que ha enviado el servidor en este caso una lista empaquetada en un objeto json la cual contiene una lista que a su ves contiene id, nombre, armas, la posicion x, y */
+    /*Se utiliza ".then" para recibir lo que ha enviado el servidor en este caso una lista empaquetada en un objeto json la cual contiene una lista que a su ves 
+    contiene id, nombre, armas, la posicion x, y */
     .then(function (res) {
         if(res.ok) {
             /*Se indica que la respuesta del servidor viene empaquetada en on objeto json con "res.json()"*/
             res.json()
-            /*Como "res.json()" es una promesa por eso se utiliza ".then" el cual recibe una funcion en este caso se utiliza una sintaxis de javascript donde se utilizan las llaves "{}"dentro de estas se pone en este caso la lista que envio el servidor debe ser el mismo nobre en este caso es "oponentes"*/
+            /*Como "res.json()" es una promesa por eso se utiliza ".then" el cual recibe una funcion en este caso se utiliza una sintaxis de javascript donde se 
+            utilizan las llaves "{}"dentro de estas se pone en este caso la lista que envio el servidor debe ser el mismo nobre en este caso es "oponentes"*/
                 .then(function ({ oponentes }) {
                     console.log(oponentes)
-                    /*Se recorrera la lista "oponentes" por cada personaje de la lista que personaje escogio el/los demas jugadores, dependiendo que personaje ha escogido es el objeto que se creara en la clase "Personajes"*/
-                    oponentes.forEach(function (itemLista) {
+                    /*Se recorrera la lista "oponentes" por cada personaje de la lista que personaje escogio el/los demas jugadores, dependiendo que personaje ha 
+                    escogido es el objeto que se creara en la clase "Personajes".
+                    Para quitar el parpadeo que existe en las imagenes de los personajes (todos los personajes de los jugadores) esto es causado porque el servidor
+                     tarda algun tiempo regresando la informacion, se utiliza una variable auxiliar la cual tendra las coordenadas para dibujar, de esta forma se 
+                     dibuja la info que esta en el frontend y no se tiene que esperar directamente una respuesta del backend. Ya no se utilizara directamente la 
+                     lista "oponentes" si no la variable auxiliar, esta variable "PersonajesOponentes" se debe crear de manera global.
+                    Ya no se utilizara "forEach" en ves "map" es muy similar a la primera pero retorna un valor asi generando una nueva lista con el mismo numero
+                    de elementos de la original*/
+                    /*oponentes.forEach(function (itemLista)*/ PersonajesOponentes = oponentes.map(function (itemLista) {
                         let personajeOponente = null
                         /*se crea una constante "personajeNombre" para guardar en ella el nombre que se extrae con "itemLista.personaje.nombre"*/
                         const personajeNombre = itemLista.personaje.nombre || ""
                         /*se inicia condicionales para saber que tipo de personaje se debe crear en la clase "Personajes" y dibujar en el canvas*/
                         if (personajeNombre === "Vaquero🤠") {
-                            personajeOponente = new Personajes("Vaquero🤠", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/vaquero.png", 0, 340, 350, 25, 50)
+                            personajeOponente = new Personajes("Vaquero🤠", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/vaquero.png", 0, 340, 350, 25, 50, itemLista.id)
                         }else if (personajeNombre === "Soldado🪖") {
-                            personajeOponente = new Personajes("Soldado🪖", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/soldado.png", 1, 360, 350, 50, 50)
+                            personajeOponente = new Personajes("Soldado🪖", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/soldado.png", 1, 360, 350, 50, 50, itemLista.id)
                         }
 
                         /*se actualizan las coordenas x, y, mediante el item que se encuentra en la lista "oponentes" el cual contiene las coordenadas actualizadas del jugador oponente"*/
                         personajeOponente.x = itemLista.x
                         personajeOponente.y = itemLista.y
-                        personajeOponente.pintarPersonajeJugador()
+                        /*Ya no se utiliza "pintarPersonajeJugador", ahora un "return" ya que se devolvera el objeto.
+                        personajeOponente.pintarPersonajeJugador()*/
+                        return personajeOponente
 
                     })
                 })
@@ -986,15 +1079,41 @@ function colisiones(contri) {
     }
     detenerAccionBotones()
     clearInterval(intervalo)
-    sectionActivarMapa.style.display = "none"
-    // Muestra la seccion Escoger-ataque en html
-    sectEscogerAtaque.style.display = "flex"
-    // Muestra la seccion donde se encuentra la informacion del jugador y del contrincante.
-    sectInfJugContri.style.display = "flex"
     itemsPersonajeContri = contri
-    seleccArmaContri(contri)
+    /*"jugadorOponenteID" esta variable global guarda la info del oponente el cual fue colisionado*/
+    jugadorOponenteID = contri.id
+    if (itemsPersonajeContri.nombre == "Vaquero🤠" || "Soldado🪖") {
+        /*Oculta la seccion que contiene el mapa*/
+        sectionActivarMapa.style.display = "none"
+        // Muestra la seccion donde se encuentra la informacion del jugador y del contrincante (otro jugador).
+        sectInfJugContri.style.display = "flex"
+        // Muestra la seccion Escoger-ataque en html
+        sectEscogerAtaque.style.display = "flex"
+        /*Activa la seccion que contiene los mensajes */
+        divMensajes.style.display = "flex"
+        recibirIdIniBE()
+    }else {
+        seleccArmaContri(contri)
+        sectionActivarMapa.style.display = "none"
+        // Muestra la seccion Escoger-ataque en html
+        sectEscogerAtaque.style.display = "flex"
+        // Muestra la seccion donde se encuentra la informacion del jugador y del contrincante.
+        sectInfJugContri.style.display = "flex"
+    }
+    
 }
 
+function recibirIdIniBE() {
+    fetch(`http://127.0.0.1:8080/jugadorIniciaPartida/${jugadorID}`)
+        .then(function(res) {
+            if (res.ok) {
+                res.json()
+                    .then(function (jugIni) {
+                        turnoAtaqueInicial(jugIni)
+                    })
+            }
+        })
+}
 // window.addEventListener("load", funcion la cual quiere ejecutar) este evento recibe la informacion cuando la pagina html ha sido
 // cargada y ejecuta la accion indicada, en este caso activa la funcion "iniciarJuego"
 window.addEventListener("load", iniciarJuego)
