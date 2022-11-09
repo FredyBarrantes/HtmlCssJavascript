@@ -27,6 +27,7 @@ sectReiniciar.style.display = "none"
 const divMensajes = document.getElementById("mensajes")
 divMensajes.style.display = "none"
 
+
 const sectEscogerArma = document.getElementById("Escoger-Arma")
 
 
@@ -103,7 +104,7 @@ let itemsPersonajeContri
 let jugadorID = null
 let PersonajesOponentes = []
 let jugadorOponenteID = null
-let firstTime = null
+let jugIniPart
 
 let heightResp
 let mapWidth = window.innerWidth - 20
@@ -315,10 +316,6 @@ function iniciarJuego() {
         veriSelec2 = document.getElementById("Escopeta")
         veriSelec3 = document.getElementById("Fusil")
     })
-
-    /*"spanTurnoAtaqueJug" y "spanTurnoAtaqueContri" llaman al elemento por el id en html y escribe lo que esta entre comillas
-    spanTurnoAtaqueJug.innerHTML = "⚔"
-    spanTurnoAtaqueContri.innerHTML = "🛡"*/
 
     // Se llama la variable (botonEquipar) y se añade que si el jugador ha hecho click ejecute la funcion "seleccArmaJugador"
     botonEquipar.addEventListener("click", seleccArmaJugador)
@@ -696,43 +693,7 @@ function lucha() {
     }*/
 }
 
-/*"secAtaqueContraJugador" esta funcion sirve para enviar los ataques escogidos por el jugador a la funcion "enviarAtaquesBE"*/
-function secAtaqueContraJugador() {
-    botones.forEach((boton) => {
-        boton.addEventListener("click", (e) => {
-            if(e.target.textContent === "🔥") {
-                boton.hidden = true
-                enviarAtaquesBE("🔥")
-            }else if(e.target.textContent === "🌊") {
-                boton.hidden = true
-                enviarAtaquesBE("🌊")
-            }else {
-                boton.hidden = true
-                enviarAtaquesBE("💨")
-            }
-        })
-    })
-}
-
-/*La funcion "enviarAtaquesBE" enviara la vida inicial y el ataque escogido por el jugador al backend, tambien recibira la actualizacion de los puntos de vida 
-tanto del jugador oponente como del mismo*/
-function enviarAtaquesBE(argPoder) {
-    fetch(`http://127.0.0.1:8080/poderSelec/${jugadorID}`, {
-        method: "post",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            poder: argPoder,
-            IdContri: jugadorOponenteID
-        })
-    })
-    verificarMunicionVidas()
-    mostrarTurno()
-}
-
 function verificarMunicionVidas() {
-
     turno += 1
 
     if (itemsPersonajeJugador.vida.length == 0 || itemsPersonajeContri.vida.length == 0) {
@@ -758,13 +719,13 @@ function verificarMunicionVidas() {
     if (ataqJugador.length == 6 || (ataqJugador.length > 1 && turno > 5)) {
         cont = -1
         /*El arreglo "ataqJugador" se borra por completo ya que se activaran dos botones de ataque de forma aleatoria y la variable cont 
-        se cambia su contenido a -1 para que de esta forma coincida el ataque del jugador que esta en lo posicion 0 y el ataque del PC*/
+        cambia su contenido a -1 para que de esta forma coincida el ataque del jugador que esta en lo posicion 0 y el ataque del PC*/
         ataqJugador.splice(ataqJugador.length - ataqJugador.length, ataqJugador.length)
         /*"poderesContri" este arreglo se ordena de forma aleatoria para que el proximo ataque no pueda ser predeciso por el jugador*/
         poderesContri.sort(function(){return Math.random() - 0.5 });
         ind = 0
         let copiSelec = 10
-        /*En este ciclo while se activan los dos botones de ataque para que pueda continuar el juego*/
+        /*este ciclo while activa los dos botones de ataque para que pueda continuar el juego*/
         while (ind != 2) {
             /*La variable "selec" se le asigna un numero aleatorio entre la cantidad de items que contenga el arreglo "poderes" y 0*/
             selec = Math.floor(Math.random() * ((poderes.length - 1) - 0 + 1) + 0)
@@ -786,44 +747,254 @@ function verificarMunicionVidas() {
       
 }
 
-/*La funcion "mostrarTurno" se utiliza para mostrar en html quien de los dos jugadores debe atacar si el jugador o el PC*/
-function mostrarTurno() {
-    if (firstTime !== 0) {
-        /*Si la variable "turno" contiene un numero par su residuo sera 0 por lo tanto el turno de atacar es del jugador si no es turno del PC*/
-        if (turno % 2 == 0) {
-            botones.forEach(boton => {
-                boton.display.disable = false
-            })
-            spanTurnoAtaqueJug.innerHTML = "🛡"
-            spanTurnoAtaqueContri.innerHTML = "⚔"
-        }else {
-            botones.forEach(boton => {
-                boton.display.disable = true
-            })
-            spanTurnoAtaqueJug.innerHTML = "⚔"
-            spanTurnoAtaqueContri.innerHTML = "🛡"
-            
-        }
-    }
-    firstTime = 1
-    
+/*"secAtaqueContraJugador" esta funcion sirve para enviar los ataques escogidos por el jugador a la funcion "enviarAtaquesBE"*/
+function secAtaqueContraJugador() {
+    botones.forEach((boton) => {
+        boton.addEventListener("click", (e) => {
+            if(e.target.textContent === "🔥") {
+                ataqJugador.push("🔥")
+                boton.hidden = true
+                enviarAtaquesBE("🔥")
+                console.log("Boton oprimido", ataqJugador)
+            }else if(e.target.textContent === "🌊") {
+                ataqJugador.push("🌊")
+                boton.hidden = true
+                enviarAtaquesBE("🌊")
+                console.log("Boton oprimido", ataqJugador)
+            }else {
+                ataqJugador.push("💨")
+                boton.hidden = true
+                enviarAtaquesBE("💨")
+                console.log("Boton oprimido", ataqJugador)
+            }
+        })
+    })
 }
 
-function turnoAtaqueInicial (argjugadorIniComb) {
-    if (argjugadorIniComb === jugadorID) {
-        console.log("jugador escogido para iniciar", argjugadorIniComb, "es igual al jugador", jugadorID)
-        turno = 0
+/*La funcion "enviarAtaquesBE" enviara la vida inicial y el ataque escogido por el jugador al backend, tambien recibira la actualizacion de los puntos de vida 
+tanto del jugador oponente como del mismo*/
+function enviarAtaquesBE(argPoder) {
+    fetch(`http://127.0.0.1:8080/poderSelec/${jugadorID}`, {
+        method: "post",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            poder: argPoder,
+        })
+    })
+
+    intervalo = setInterval(obtenerAtaques, 1000)
+}
+
+function obtenerAtaques() {
+    fetch(`http://127.0.0.1:8080/poderSelec/${jugadorOponenteID}`)
+        .then(function (res) {
+            if (res.ok) {
+                res.json()
+                    .then(function ({ ataques }) {
+                        console.log("ataque oponente enviado desde BE", ataques)
+                        if (ataques !== "") {
+                            poderesContri.push(ataques)
+                            luchajugadores()
+                            clearInterval(intervalo)
+                        }
+                    })
+            }
+        })
+}
+
+function luchajugadores() {
+    cont += 1
+    console.log("lista ataque jugador", ataqJugador, "lista ataque op", poderesContri)
+    if (turno % 2 == 0) {
+        if (ataqJugador[cont] == "🌊" && poderesContri[cont] == "🔥") {
+            itemsPersonajeContri.vida.splice(itemsPersonajeContri.vida.length - 2, itemsPersonajeContri.vida.length)
+            spanvidasContri.innerHTML = itemsPersonajeContri.vida
+            resultado = " Oponente -🫀🫀"
+            mensajeBatallaVs()
+        }else
+        if (ataqJugador[cont] == "🌊" && poderesContri[cont] == "💨") {
+            resultado = " Sin daño"
+            mensajeBatallaVs()
+        }else
+        if (ataqJugador[cont] == "🌊" && poderesContri[cont] == "🌊") {
+            itemsPersonajeContri.vida.pop()
+            spanvidasContri.innerHTML = itemsPersonajeContri.vida
+            resultado = " Oponente -🫀"
+            mensajeBatallaVs()
+        }else
+        if (ataqJugador[cont] == "🔥" && poderesContri[cont] == "💨") {
+            itemsPersonajeContri.vida.splice(itemsPersonajeContri.vida.length - 2, itemsPersonajeContri.vida.length)
+            spanvidasContri.innerHTML = itemsPersonajeContri.vida
+            resultado = " Oponente -🫀🫀"
+            mensajeBatallaVs()
+        }else
+        if (ataqJugador[cont] == "🔥" && poderesContri[cont]== "🌊") {
+            resultado = " Sin daño"
+            mensajeBatallaVs()
+        }else
+        if (ataqJugador[cont] == "🔥" && poderesContri[cont]== "🔥") {
+            itemsPersonajeContri.vida.pop()
+            spanvidasContri.innerHTML = itemsPersonajeContri.vida
+            resultado = " Oponente -🫀"
+            mensajeBatallaVs()
+        }else
+        if (ataqJugador[cont] == "💨" && poderesContri[cont] == "🌊") {
+            itemsPersonajeContri.vida.splice(itemsPersonajeContri.vida.length - 2, itemsPersonajeContri.vida.length)
+            spanvidasContri.innerHTML = itemsPersonajeContri.vida
+            resultado = " Oponente -🫀🫀"
+            mensajeBatallaVs()
+        }else
+        if (ataqJugador[cont] == "💨" && poderesContri[cont] == "🔥") {
+            resultado = " Sin daño"
+            mensajeBatallaVs()
+        }else
+        if (ataqJugador[cont] == "💨" && poderesContri[cont] == "💨") {
+            itemsPersonajeContri.vida.pop()
+            spanvidasContri.innerHTML = itemsPersonajeContri.vida
+            resultado = " Oponente -🫀"
+            mensajeBatallaVs()
+        }
+
+    /*inicia la logica cuando el PC es el atacante*/
+
+    }else {
+        if (poderesContri[cont] == "🌊" && ataqJugador[cont] == "🔥") {
+            itemsPersonajeJugador.vida.splice(itemsPersonajeJugador.vida.length - 2, itemsPersonajeJugador.vida.length)
+            spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
+            resultado = " Tu -🫀🫀"
+            mensajeBatallaVs()
+        }else
+        if (poderesContri[cont]== "🌊" && ataqJugador[cont] == "💨") {
+            resultado = " Sin daño"
+            mensajeBatallaVs()
+        }else
+        if (poderesContri[cont]== "🌊" && ataqJugador[cont] == "🌊") {
+            itemsPersonajeJugador.vida.pop()
+            resultado = " Tu -🫀"
+            spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
+            mensajeBatallaVs()
+        }else
+        if (poderesContri[cont] == "🔥" && ataqJugador[cont] == "💨") {
+            itemsPersonajeJugador.vida.splice(itemsPersonajeJugador.vida.length - 2, itemsPersonajeJugador.vida.length)
+            spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
+            resultado = " Tu -🫀🫀"
+            mensajeBatallaVs()
+        }else
+        if (poderesContri[cont] == "🔥" && ataqJugador[cont] == "🌊") {
+            resultado = " Sin daño"
+            mensajeBatallaVs()
+        }else
+        if (poderesContri[cont] == "🔥" && ataqJugador[cont] == "🔥") {
+            itemsPersonajeJugador.vida.pop()
+            resultado = " Tu -🫀"
+            spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
+            mensajeBatallaVs()
+        }else
+        if (poderesContri[cont] == "💨" && ataqJugador[cont] == "🌊") {
+            itemsPersonajeJugador.vida.splice(itemsPersonajeJugador.vida.length - 2, itemsPersonajeJugador.vida.length)
+            spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
+            resultado = " Tu -🫀🫀"
+            mensajeBatallaVs()
+        }else
+        if (poderesContri[cont] == "💨" && ataqJugador[cont] == "🔥") {
+            resultado = " Sin daño"
+            mensajeBatallaVs()
+        }else
+        if (poderesContri[cont] == "💨" && ataqJugador[cont] == "💨") {
+            itemsPersonajeJugador.vida.pop()
+            resultado = " Tu -🫀"
+            spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
+            mensajeBatallaVs()
+        }
+    
+    }
+    spanAtaqSelecJug.innerHTML = ataqJugador[cont]
+    spanAtaqSelecContri.innerHTML = poderesContri[cont]
+
+    verificarMunicionVidasJugadores()
+    mostrarTurno()
+}
+
+function verificarMunicionVidasJugadores() {
+    turno += 1
+
+    if (itemsPersonajeJugador.vida.length == 0 || itemsPersonajeContri.vida.length == 0) {
+        if (itemsPersonajeJugador.vida.length > itemsPersonajeContri.vida.length) {
+            botones.forEach(boton => {
+                boton.hidden = true
+            });
+            mensajeFinal("🇬 🇦 🇳 🇦 🇸 🎉🥳")
+            return
+        }else if (itemsPersonajeContri.vida.length > itemsPersonajeJugador.vida.length) {
+            botones.forEach(boton => {
+                boton.hidden = true
+            });
+            mensajeFinal("🇵 🇮 🇪 🇷 🇩 🇪 🇸 😱🤬")
+            return
+        }
+    }
+    
+    /*Si la cantidad de items que tiene el arreglo "ataqJugador" es igual a 6 ingresa a la condicion, esto quiere decir que el jugador ya
+    ha usado los 6 ataques y ambos tienen puntos de vida asi que se deben mostrar mas botones de ataque para determinar quien gana sin
+    embargo si ya utilizo los dos nuevos botones de ataque debera entrar nuevamente a la condicion es por esto que se utiliza || o para
+    que evalue nuevamente si el arreglo "ataqJugador contiene mas de un item"*/
+    if (ataqJugador.length == 6 || (ataqJugador.length > 1 && turno > 5)) {
+        cont = -1
+        /*El arreglo "ataqJugador" se borra por completo ya que se activaran dos botones de ataque de forma aleatoria y la variable cont 
+        cambia su contenido a -1 para que de esta forma coincida el ataque del jugador que esta en lo posicion 0 y el ataque del PC*/
+        ataqJugador.splice(ataqJugador.length - ataqJugador.length, ataqJugador.length)
+        poderesContri.splice(poderesContri.length - poderesContri.length, poderesContri.length)
+        ind = 0
+        let copiSelec = 10
+        /*este ciclo while activa los dos botones de ataque para que pueda continuar el juego*/
+        while (ind != 2) {
+            /*La variable "selec" se le asigna un numero aleatorio entre la cantidad de items que contenga el arreglo "poderes" y 0*/
+            selec = Math.floor(Math.random() * ((poderes.length - 1) - 0 + 1) + 0)
+            /*En ocasiones el numero aleatorio que sale en la priemera ejecucion del while sale en la segunda ejecucion y esto causa
+            que solo aparesca un boton de ataque, a su vez impide que entre en el if principal ya que el arreglo "ataqJugador" seria 
+            igual a 1, no mayor, para evitar el bug en la primera ejecucion se hace una copia de la variable "selec" para compararla en la segunda
+            ejecucion si ambas variables son diferentes se muestran lo botones si no vuelve al inicio del ciclo y hace todo de nuevo hasta que
+            tome un numero diferente*/
+            if (selec != copiSelec) {
+                /*Luego se toma el NodeList "botones" y se activa el boton determinado por la variable "selec" que contiene un numero aleatorio*/
+                botones[selec].hidden = false
+                copiSelec = selec
+                ind += 1
+            }
+            
+        }
+       
+    }
+}
+
+/*La funcion "mostrarTurno" se utiliza para mostrar en html quien de los dos jugadores debe atacar si el jugador o el PC*/
+function mostrarTurno() {
+        /*Si la variable "turno" contiene un numero par su residuo sera 0 por lo tanto el turno de atacar es del jugador si no es turno del PC*/
+    if (turno % 2 == 0) {
+        alert("Ataca!! 🏹")
         spanTurnoAtaqueJug.innerHTML = "⚔"
         spanTurnoAtaqueContri.innerHTML = "🛡"
     }else {
-        turno = 1
+        alert("Defiendete!! 🧱")
         spanTurnoAtaqueJug.innerHTML = "🛡"
         spanTurnoAtaqueContri.innerHTML = "⚔"
-        botones.forEach(boton => {
-            boton.display.disable = true
-        })
     }
-    firstTime = 0
+}
+
+function turnoAtaqueInicial () {
+    if (jugIniPart === jugadorID) {
+        turno = 0
+        alert("Ataca!! 🏹")
+        spanTurnoAtaqueJug.innerHTML = "⚔"
+        spanTurnoAtaqueContri.innerHTML = "🛡"
+    }else if (jugIniPart !== jugadorID) {
+        turno = 1
+        alert("Defiendete!! 🧱")
+        spanTurnoAtaqueJug.innerHTML = "🛡"
+        spanTurnoAtaqueContri.innerHTML = "⚔"
+    }
     secAtaqueContraJugador()
 }
 
@@ -845,7 +1016,19 @@ function mensajeBatalla() {
 }
 
 function mensajeBatallaVs() {
+    // la variable "parrafo1" crea un elementp <p>
+    let parrafo1 = document.createElement("p")
+    // Con la eqtiqueta <p> creada se inserta el ataque del jugador y del jugador oponente.
+    parrafo1.innerHTML = ataqJugador[cont] + " ⚔ " + poderesContri[cont] + "   🟰"
+    // la variable "secMensaje" se utiliza para indicar que lo escrito por la variable "parrafo1" no sea remplazado si no escrito abajo
+    // del anterior mensaje y se le indica en que parte del html se quiere insertar la informacion
+    let secMensaje = document.getElementById("divmensajes")
+    // "appendChild" sirve para indicar que no se debe remplazar el objeto anterior a este.
+    secMensaje.appendChild(parrafo1)
 
+    let parrafo2 = document.createElement("p")
+    parrafo2.innerHTML = resultado
+    secMensaje.appendChild(parrafo2)
 }
 
 function mensajeFinal(menfin) {
@@ -855,6 +1038,14 @@ function mensajeFinal(menfin) {
     let secMensaje = document.getElementById("divmensajes")
     secMensaje.appendChild(parrafo)
 
+    if (itemsPersonajeJugador.vida > 0) {
+        sectInfJugContri.style.display = "none"
+        sectEscogerAtaque.style.display = "none"
+        divMensajes.style.display = "none"
+        sectionActivarMapa.style.display = "flex"
+    }else {
+        fnReiniciar()
+    }
     // Activa la seccion donde se encuentra el boton reiniciar.
     sectReiniciar.style.display = "flex"
 }
@@ -937,7 +1128,7 @@ function enviarPosBE(x, y) {
             y,
         })
     })
-    /*Se utiliza ".then" para recibir lo que ha enviado el servidor en este caso una lista empaquetada en un objeto json la cual contiene una lista que a su ves 
+    /*Se utiliza ".then" para recibir lo que ha enviado el servidor empaquetado en un objeto json la cual contiene una lista que a su ves 
     contiene id, nombre, armas, la posicion x, y */
     .then(function (res) {
         if(res.ok) {
@@ -1091,7 +1282,7 @@ function colisiones(contri) {
         sectEscogerAtaque.style.display = "flex"
         /*Activa la seccion que contiene los mensajes */
         divMensajes.style.display = "flex"
-        recibirIdIniBE()
+        IniciaBatalla()
     }else {
         seleccArmaContri(contri)
         sectionActivarMapa.style.display = "none"
@@ -1103,17 +1294,28 @@ function colisiones(contri) {
     
 }
 
-function recibirIdIniBE() {
-    fetch(`http://127.0.0.1:8080/jugadorIniciaPartida/${jugadorID}`)
-        .then(function(res) {
-            if (res.ok) {
-                res.json()
-                    .then(function (jugIni) {
-                        turnoAtaqueInicial(jugIni)
-                    })
-            }
-        })
+function IniciaBatalla() {
+
+    // Se escribe en el documento html el arma que ha escogido el pc
+    // spanArmaContri.innerHTML = infArmas[selec].nombre
+    
+    // Se escribe la imagen con la que ha colisionado en el mapa (canvas), en el apartado contrincante
+    DivImgSelecContri.innerHTML = `<img src=${itemsPersonajeContri.img} alt=${itemsPersonajeContri.nombre} class=${"mini-img"+itemsPersonajeContri.nombre} />`
+
+    spanvidasContri.innerHTML = itemsPersonajeContri.vida
+
+    fetch(`http://127.0.0.1:8080/jugadoresBatalla/${jugadorID}`) 
+    .then(function(res) {
+        if (res.ok) {
+            res.text()
+                .then(function (respuesta) {
+                    jugIniPart = respuesta
+                    turnoAtaqueInicial()
+                })
+        }
+    })
 }
+
 // window.addEventListener("load", funcion la cual quiere ejecutar) este evento recibe la informacion cuando la pagina html ha sido
 // cargada y ejecuta la accion indicada, en este caso activa la funcion "iniciarJuego"
 window.addEventListener("load", iniciarJuego)

@@ -11,8 +11,8 @@ app.use(cors())
 app.use(express.json())
 
 const players = []
-/*"jugadoresCombate" en esta lista se guarda el id de los jugadores que entraron en combate */
-let jugadoresCombate = []
+
+const jugadoresBatalla = []
 
 class Jugador{
     constructor(id) {
@@ -106,52 +106,43 @@ app.post("/coordenadas/:jugadorID/posicion", (req, res) => {
     })
 })
 
+/*El jugador que inicia el choque es tambien quien inicia atacando*/
+app.get("/jugadoresBatalla/:jugadorID", (req, res) => {
+    let jugadorIni = null
+    const jugadorID = req.params.jugadorID|| ""
+    /*Se guarda el id de los jugadores en una lista*/
+    jugadoresBatalla.push(jugadorID)
+    if (jugadoresBatalla.length > 0) {
+        jugadorIni = jugadoresBatalla[0]
+    }
+    res.send(jugadorIni)
+})
+
 /*Se recibe el poder seleccionado por el jugador*/
 app.post("/poderSelec/:jugadorId", (req, res) => {
-    console.log("--- por seleccionado ---")
+    console.log("--- Ataque enviado por jugador ---")
     const jugadorID = req.params.jugadorId || ""
     const nomPoder = req.body.poder || ""
-    const IdJugadorContri = req.body.IdContri || ""
 
     const jugadorIndex = players.findIndex((jugador) => jugadorID === jugador.id)
     if (jugadorIndex >= 0) {
         players[jugadorIndex].asignarPoderes(nomPoder)
     }
-    console.log(players)
-    const ind = players.findIndex((jugador) => IdJugadorContri === jugador.id)
-    let ataqueContri = null
-    if (ind >= 0) {
-        ataqueContri = players[ind].poder
-    }
 
-    console.log("Ataques jugador contrincante: ", ataqueContri)
-
+    console.log("132. Info Jugadores", players)
     res.end()
 })
 
-/*Se recibe id de los jugadores para guardarlos en una lista y de forma aleatoria establecer quien inicia atacando, luego el id del ganador se envia al frontend*/
-app.post("/jugadorIniciaPartida/:jugadorID/", (req, res) => {
-    console.log("Cliente envia id")
-    const jugadorID = req.params.jugadorID || ""
-    
-    /*"jugadoresCombate" esta lista esta declarada globalmente. Se ingresan los id's de los jugadores que han entrado en combate*/
-    jugadoresCombate.push(jugadorID)
-    console.log("jugadores que entraron en combate", jugadoresCombate)
+app.get("/poderSelec/:oponenteId", (req, res) => {
+    console.log("--- responde con el ataque del oponente ---")
+    const oponenteID = req.params.oponenteId || ""
 
-    if (jugadoresCombate.length === 2) {
-        console.log("Cantidad objetos en jugadoresCombate", jugadoresCombate.length)
-        /*Se itera en la lista "jugadoresCombate", de manera aleatoria se escoge la posicion y se devuelve a la variable "ind" */
-        let ind = Math.floor(Math.random() * ((jugadoresCombate.length - 1) - 0 + 1) + 0)
-        /*"jugadorInicia" en esta variable se guarda el id del jugador escogido de manera aleatoria*/
-        let jugadorInicia = jugadoresCombate[ind]
-        console.log("Jugador que inicia combate", jugadorInicia)
-
-        /*Se envia el id del jugador al frontend*/
-        res.send({
-            jugIni: jugadorInicia })
-
-    }
-
+    const jugador = players.find((jugador) => jugador.id === oponenteID)
+    console.log("141. Ataque oponente", jugador.poder)
+    res.send({
+        ataques: jugador.poder || ""
+    })
+    jugador.poder = ""
 })
 
 /* app.listen(8080, () => {
