@@ -5,6 +5,7 @@ const cors = require("cors")
 /*se llama a la libreria express */
 const app = express()
 
+app.use(express.static('public'))
 /*Se llama a la libreria cors */
 app.use(cors())
 /*Se habilita la capacidad de recibir peticiones post con contenido json*/
@@ -28,9 +29,6 @@ class Jugador{
     }
     asignarPoderes(poder) {
         this.poder = poder
-    }
-    asignarVidasIni(vidasIni) {
-        this.vidasIni = vidasIni
     }
 }
 
@@ -74,6 +72,7 @@ app.post("/personaje/:jugadorID", function (req, res) {
     const nomArma = req.body.arma || ""
     /*Se crea un objeto nuevo en la clase "Personajes" como argumento recibe el nombre que se extrajo del "body" objeto "json" */
     const personaje = new Personajes(nomPersonaje, nomArma)
+    
     /*Se busca el jugador asiciado al ID en la lista "players" creando una constante que obtendra la lista de jugadores, al buscar el jugador en la lista
     puede que este o no, primero se debe validar por medio de la funcion "findIndex" esta busca en la lista algun elemento que cumpla una condicion
     si este elemento se encuentra devolvera su numero de indexado, si no existe regresa -1, si se tiene un numero mayor a 0 existe.*/
@@ -93,12 +92,10 @@ app.post("/coordenadas/:jugadorID/posicion", (req, res) => {
     if (playerIndex >= 0) {
         players[playerIndex].actPosicion(x, y)
     }
-
     /*Para recibir las coordenas de los demas jugadores y devolver las coordenadas de los otros jugadores eceptuando la del propio jugador, comenzamos
     filtrando todos los jugadores menos el actual. El metodo "filter" permite ejecutar sobre las listas un filtro recibiendo una funcion en el cual se 
-    agraga un argumento que sera un elemento de la lista, en el cuerpo de la funcion se hace la comparacion lo que devuelve verdadero o falso */
+    agrega un argumento que sera un elemento de la lista, en el cuerpo de la funcion se hace la comparacion lo que devuelve verdadero o falso */
     const oponentes = players.filter((player) => jugadorID !== player.id)
-
     /*Mediante "res.send" se devuelven a traves de la respuesta de esta peticion, se crea un objeto json ya que en express solo se pueden devolver esos
     objetos*/
     res.send({
@@ -119,8 +116,7 @@ app.get("/jugadoresBatalla/:jugadorID", (req, res) => {
 })
 
 /*Se recibe el poder seleccionado por el jugador*/
-app.post("/poderSelec/:jugadorId", (req, res) => {
-    console.log("--- Ataque enviado por jugador ---")
+app.post("/poderSeleccion/:jugadorId", (req, res) => {
     const jugadorID = req.params.jugadorId || ""
     const nomPoder = req.body.poder || ""
 
@@ -129,16 +125,13 @@ app.post("/poderSelec/:jugadorId", (req, res) => {
         players[jugadorIndex].asignarPoderes(nomPoder)
     }
 
-    console.log("132. Info Jugadores", players)
     res.end()
 })
 
 app.get("/poderSelec/:oponenteId", (req, res) => {
-    console.log("--- responde con el ataque del oponente ---")
     const oponenteID = req.params.oponenteId || ""
 
     const jugador = players.find((jugador) => jugador.id === oponenteID)
-    console.log("141. Ataque oponente", jugador.poder)
     res.send({
         ataques: jugador.poder || ""
     })

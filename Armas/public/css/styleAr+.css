@@ -1,3 +1,5 @@
+/*. = class / # = id*/
+
 @import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap');
 
 body {
@@ -264,6 +266,29 @@ input:checked + label {
 #activarMapa {
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+}
+
+#activarMapa button {
+    color: #824203;
+    font-family: 'Shadows Into Light';
+    font-size: 155%;
+    width: auto;
+    height: auto;
+    box-shadow: 1px 4px 7px 1px darkolivegreen;
+    border-radius: 20px;
+    border-style: solid;
+    border-color: #f5bb08;
+    margin: 2px;
+    background-color: darksalmon;
+}
+
+#activarMapa button:hover {
+    background-color: lightsalmon;
+}
+
+#activarMapa button:active {
+    background-color: salmon;
 }
 /*#mapa {
     border: solid;
@@ -271,8 +296,26 @@ input:checked + label {
     margin: 3px;
 }*/
 
+.mini-imgFusil {
+    width: 65px;
+    transform: rotate(-45deg);
+}
+
+.mini-imgPistola {
+    width: 55px;
+}
+
+.mini-imgRevolver {
+    width: 55px;
+}
+
+.mini-imgEscopeta {
+    width: 65px;
+    transform: rotate(45deg);
+}
+/*--------------------------------------------//-------------------------------------------//---------------------------------//---------------------------------//*/
 /* responsive design*/
-@media (max-width: 360px) {
+@media (max-width: 390px) {
 
     .titulo {
         width: 248px;
@@ -280,12 +323,71 @@ input:checked + label {
         font-size: 296%;
     }
 
+    label {
+
+        color: #824203;
+        width: 130px;
+        height: 130px;
+        margin: 10px;
+        border-radius: 20px;
+        outline-style: solid;
+        outline-color: #f5bb08;
+        background-color: olive;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .imgVaquero🤠 {
+        width: 56px;
+        height: 106px;
+    }
+
+    .imgSoldado🪖 {
+        width: 120px;
+        height: 112px;
+    }
+    
+    .Div-Tarjetas-Personajes {
+        display: flow-root;
+    }
+
     .divTarjetasArma {
         flex-direction: column;
     }
 
-    .botonesAtaque {
+    .Pistola {
+        width: 105px;
+        height: 70px;
+    }
+
+    .Revolver {
+        width: 112px;
+        height: 77px;
+    }
+
+    .Escopeta {
+        width: 120px;
+        transform: rotate(45deg);
+    }
+
+    .Fusil {
+        width: 130px;
+        transform: rotate(-45deg);
+    }
+
+    #Escoger-ataque {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #contenedorPoderes {
         display: flex;
+        align-items: center;
+    }
+
+    .botonesAtaque {
         flex-direction: column;
         justify-content: center;
         width: 35px;
@@ -294,20 +396,21 @@ input:checked + label {
     }
 
     #sectInfJugContri {
-        display: flex;
-        flex-direction: column;
         align-items: center;
     }
 
     #divInfJugs {
         font-size: 14px;
-        height: 171px;
-        width: 226px;
+        height: 360px;
+        width: 90px;
     }
     #divmensajes {
+        display: grid;
+        grid-template-columns: 45px 45px;
         font-size: 18px;
-        height: 171px;
-        width: 226px;
+        height: 270px;
+        width: 90px;
         margin-bottom: 3px;
+        overflow: auto;
     }
 }

@@ -25,6 +25,32 @@
         <section id="activarMapa">
             <h1 class="titulo">Ar++ 🏹🪖☠</h1>
             <canvas id="mapa"></canvas>
+            <button
+                ontouchend="detenerAccionBotones()"  
+                onmouseup="detenerAccionBotones()" 
+                onmousedown="movPerAri()"
+                ontouchstart="movPerAri()" 
+            >Arriba</button>
+            <div>
+                <button 
+                    onmouseup="detenerAccionBotones()"
+                    ontouchend="detenerAccionBotones()" 
+                    onmousedown="movPerHiz()"
+                    ontouchstart="movPerHiz()"
+                >Izquierda</button>
+                <button 
+                    onmouseup="detenerAccionBotones()"
+                    ontouchend="detenerAccionBotones()" 
+                    onmousedown="movPerAbj()"
+                    ontouchstart="movPerAbj()"
+                >Abajo</button>
+                <button 
+                    onmouseup="detenerAccionBotones()"
+                    ontouchend="detenerAccionBotones()" 
+                    onmousedown="movPerDer()"
+                    ontouchstart="movPerDer()"
+                >Derecha</button>
+            </div>
         </section>
 
         <section id="Escoger-ataque">
@@ -48,12 +74,12 @@
         <section id="sectInfJugContri">
 
             <div id="divInfJugs">
-                <h2 class="subNomJugs">Jugador</h2>
+                <h2 class="subNomJugs">J1</h2>
                 <span id="vida-jugador"></span>
                 <div id="DivImgSelecJugador"></div>
                 <div id="divEscudosJug"></div>
-                <p>Arma equipada: <span id="arma-jugador"></span></p>
-                <p>Ataque: <span id="ataqSelecJug"></span></p>
+                <div id="arma-jugador"></div>
+                <p><span id="ataqSelecJug"></span></p>
                 <span id="spanTurnoAtaqueJug"></span>
                 
             </div>
@@ -66,12 +92,12 @@
             </div>
 
             <div id="divInfJugs">
-                <h2 class="subNomJugs">Contrincante</h2>
+                <h2 class="subNomJugs">J2</h2>
                 <span id="vida-contrincante"></span>
                 <div id="DivImgSelecContri"></div>
                 <div id="divEscudosContri"></div>
-                <p>Arma equipada: <span id="arma-contrincante"></span></p>
-                <p>Ataque: <span id="ataqSelecContri"></span></p>
+                <div id="arma-contrincante"></div>
+                <p><span id="ataqSelecContri"></span></p>
                 <span id="spanTurnoAtaqueContri"></span>
             </div>
 
