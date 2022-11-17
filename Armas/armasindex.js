@@ -5,9 +5,13 @@ const cors = require("cors")
 /*se llama a la libreria express */
 const app = express()
 
+/*Se utiliza la propiedad "static" de express para crear un servidor de forma local (lan) en la carpeta public se deben poner todos los archivos estaticos (html, css,
+    javascript, imagenes, etc) de la aplicacion.*/
 app.use(express.static('public'))
+
 /*Se llama a la libreria cors */
 app.use(cors())
+
 /*Se habilita la capacidad de recibir peticiones post con contenido json*/
 app.use(express.json())
 
@@ -142,6 +146,6 @@ app.get("/poderSelec/:oponenteId", (req, res) => {
     console.log("Servidor On")
 })
 /*Otra manera de escribir funciones callback*/
-app.listen(8080, function() {
-    console.log("Server ON, port:8080")
+app.listen(3000, function() {
+    console.log("Server ON, port:3000")
 })

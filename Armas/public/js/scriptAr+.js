@@ -329,7 +329,7 @@ function unirseJuego() {
     /*Se envia una peticion al servidor con la funcion "fetch", envia las llamadas mediante http, permite indicar asi que URI, tambien permite indicar
     el metodo que queremos llamar, por defecto toma "get" pero se puede especificar cual usar como "post", si es la ultima se puede enviar los datos
     que van a traves de esa peticion. "Fetch" puede tardar en responder, conocido como peticion asincrona, no se sabe cuando se recivira la respuesta*/
-    fetch("http://192.168.0.9:8080/unirse")
+    fetch("http://localhost:8080/unirse")
     /*".then" esta propiedad la tienen todas las funciones asincronas, recive una funcion la cual es un callback, se ejecutara una ves se halla resuelto
     la respuesta del servidor. Como primer argumentos se recive la respuesta "res"*/
         .then(function(res) {
@@ -421,7 +421,7 @@ function perSelecJug(argPersonajeJugador,argArmaJugador) {
     una variable, con esto ya se ha unido la URL con el Id del jugador asi que es igual a lo que esta en el servicio "armasindex.js"
     "/personaje/:jugadorID"*/
     /*Se agrega un segundo parametro a la funcion que sea un objeto json de configuracion donde se agrega el metodo "method"*/
-    fetch(`http://192.168.0.9:8080/personaje/${jugadorID}`, {
+    fetch(`http://localhost:8080/personaje/${jugadorID}`, {
         /*"method: "post", se agrega con una cadena de texto "post" asi se indica que se enviara con una peticion tipo "post"*/
         method: "post",
         /*Se indica que tipo de dato se enviara y los datos que se enviaran, para el tipo de dato se utilizara las cabeceras "headers", estos son 
@@ -777,7 +777,7 @@ function enviarAtaquesBE(argPoder) {
         boton.disabled = true
     });
 
-    fetch(`http://192.168.0.9:8080/poderSeleccion/${jugadorID}`, {
+    fetch(`http://localhost:8080/poderSeleccion/${jugadorID}`, {
         method: "post",
         headers: {
             "Content-Type": "application/json"
@@ -791,7 +791,7 @@ function enviarAtaquesBE(argPoder) {
 }
 
 function obtenerAtaques() {
-    fetch(`http://192.168.0.9:8080/poderSelec/${jugadorOponenteID}`)
+    fetch(`http://localhost:8080/poderSelec/${jugadorOponenteID}`)
         .then(function (res) {
             if (res.ok) {
                 res.json()
@@ -1117,7 +1117,7 @@ function pintarCanvas() {
 }
 
 function enviarPosBE(x, y) {
-    fetch(`http://192.168.0.9:8080/coordenadas/${jugadorID}/posicion`, {
+    fetch(`http://localhost:8080/coordenadas/${jugadorID}/posicion`, {
         method: "post",
         headers: {
             "Content-Type" : "application/json"
@@ -1297,7 +1297,7 @@ function colisiones(contri) {
 
 function IniciaBatalla() {
 
-    fetch(`http://192.168.0.9:8080/jugadoresBatalla/${jugadorID}`) 
+    fetch(`http://localhost:8080/jugadoresBatalla/${jugadorID}`)
     .then(function(res) {
         if (res.ok) {
             res.text()
