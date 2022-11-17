@@ -120,15 +120,14 @@ let armaContri
 
 // Inicia seccion class Personajes
 class Personajes {
-    constructor(nombre, vida, img, /*ind, x = 100, y = 105, ancho = 50, alto = 50,*/ id = 0) {
+    constructor(nombre, vida, img, x, y, ancho, alto, id = 0) {
         this.nombre = nombre
         this.vida = vida
         this.img = img
-        /*this.ind = ind*/
-        this.x = 100
-        this.y = 105
-        this.ancho = 50
-        this.alto = 50
+        this.x = x
+        this.y = y
+        this.ancho = ancho
+        this.alto = alto
         this.id = id
         this.mapaFoto = new Image()
         this.mapaFoto.src = img
@@ -151,8 +150,8 @@ class Personajes {
     }
 }
 
-let vaquero = new Personajes("Vaquero🤠", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/vaquero.png")
-let soldado = new Personajes("Soldado🪖", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/soldado.png")
+let vaquero = new Personajes("Vaquero🤠", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/vaquero.png", /*x*/100, /*y*/105, /*ancho*/25, /*alto*/50,)
+let soldado = new Personajes("Soldado🪖", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/soldado.png", /*x*/290, /*y*/190, /*ancho*/50, /*alto*/50,)
 
 infPersonajes.push(vaquero, soldado)
 // Finaliza seccion class Personajes
@@ -814,7 +813,7 @@ function luchajugadores() {
         if (ataqJugador[cont] == "🌊" && poderesContri[cont] == "🔥") {
             itemsPersonajeContri.vida.splice(itemsPersonajeContri.vida.length - 2, itemsPersonajeContri.vida.length)
             spanvidasContri.innerHTML = itemsPersonajeContri.vida
-            resultado = " Oponente -🫀🫀"
+            resultado = " J2 -🫀🫀"
             mensajeBatallaVs()
         }else
         if (ataqJugador[cont] == "🌊" && poderesContri[cont] == "💨") {
@@ -824,13 +823,13 @@ function luchajugadores() {
         if (ataqJugador[cont] == "🌊" && poderesContri[cont] == "🌊") {
             itemsPersonajeContri.vida.pop()
             spanvidasContri.innerHTML = itemsPersonajeContri.vida
-            resultado = " Oponente -🫀"
+            resultado = " J2 -🫀"
             mensajeBatallaVs()
         }else
         if (ataqJugador[cont] == "🔥" && poderesContri[cont] == "💨") {
             itemsPersonajeContri.vida.splice(itemsPersonajeContri.vida.length - 2, itemsPersonajeContri.vida.length)
             spanvidasContri.innerHTML = itemsPersonajeContri.vida
-            resultado = " Oponente -🫀🫀"
+            resultado = " J2 -🫀🫀"
             mensajeBatallaVs()
         }else
         if (ataqJugador[cont] == "🔥" && poderesContri[cont]== "🌊") {
@@ -840,13 +839,13 @@ function luchajugadores() {
         if (ataqJugador[cont] == "🔥" && poderesContri[cont]== "🔥") {
             itemsPersonajeContri.vida.pop()
             spanvidasContri.innerHTML = itemsPersonajeContri.vida
-            resultado = " Oponente -🫀"
+            resultado = " J2 -🫀"
             mensajeBatallaVs()
         }else
         if (ataqJugador[cont] == "💨" && poderesContri[cont] == "🌊") {
             itemsPersonajeContri.vida.splice(itemsPersonajeContri.vida.length - 2, itemsPersonajeContri.vida.length)
             spanvidasContri.innerHTML = itemsPersonajeContri.vida
-            resultado = " Oponente -🫀🫀"
+            resultado = " J2 -🫀🫀"
             mensajeBatallaVs()
         }else
         if (ataqJugador[cont] == "💨" && poderesContri[cont] == "🔥") {
@@ -856,7 +855,7 @@ function luchajugadores() {
         if (ataqJugador[cont] == "💨" && poderesContri[cont] == "💨") {
             itemsPersonajeContri.vida.pop()
             spanvidasContri.innerHTML = itemsPersonajeContri.vida
-            resultado = " Oponente -🫀"
+            resultado = " J2 -🫀"
             mensajeBatallaVs()
         }
 
@@ -866,7 +865,7 @@ function luchajugadores() {
         if (poderesContri[cont] == "🌊" && ataqJugador[cont] == "🔥") {
             itemsPersonajeJugador.vida.splice(itemsPersonajeJugador.vida.length - 2, itemsPersonajeJugador.vida.length)
             spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
-            resultado = " Tu -🫀🫀"
+            resultado = " J1 -🫀🫀"
             mensajeBatallaVs()
         }else
         if (poderesContri[cont]== "🌊" && ataqJugador[cont] == "💨") {
@@ -875,14 +874,14 @@ function luchajugadores() {
         }else
         if (poderesContri[cont]== "🌊" && ataqJugador[cont] == "🌊") {
             itemsPersonajeJugador.vida.pop()
-            resultado = " Tu -🫀"
+            resultado = " J1 -🫀"
             spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
             mensajeBatallaVs()
         }else
         if (poderesContri[cont] == "🔥" && ataqJugador[cont] == "💨") {
             itemsPersonajeJugador.vida.splice(itemsPersonajeJugador.vida.length - 2, itemsPersonajeJugador.vida.length)
             spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
-            resultado = " Tu -🫀🫀"
+            resultado = " J1 -🫀🫀"
             mensajeBatallaVs()
         }else
         if (poderesContri[cont] == "🔥" && ataqJugador[cont] == "🌊") {
@@ -891,14 +890,14 @@ function luchajugadores() {
         }else
         if (poderesContri[cont] == "🔥" && ataqJugador[cont] == "🔥") {
             itemsPersonajeJugador.vida.pop()
-            resultado = " Tu -🫀"
+            resultado = " J1 -🫀"
             spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
             mensajeBatallaVs()
         }else
         if (poderesContri[cont] == "💨" && ataqJugador[cont] == "🌊") {
             itemsPersonajeJugador.vida.splice(itemsPersonajeJugador.vida.length - 2, itemsPersonajeJugador.vida.length)
             spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
-            resultado = " Tu -🫀🫀"
+            resultado = " J1 -🫀🫀"
             mensajeBatallaVs()
         }else
         if (poderesContri[cont] == "💨" && ataqJugador[cont] == "🔥") {
@@ -907,7 +906,7 @@ function luchajugadores() {
         }else
         if (poderesContri[cont] == "💨" && ataqJugador[cont] == "💨") {
             itemsPersonajeJugador.vida.pop()
-            resultado = " Tu -🫀"
+            resultado = " J1 -🫀"
             spanVidaJugador.innerHTML = itemsPersonajeJugador.vida
             mensajeBatallaVs()
         }
@@ -1152,9 +1151,9 @@ function enviarPosBE(x, y) {
                         armaContri = itemLista.personaje.arma || ""
                         /*se inicia condicionales para saber que tipo de personaje se debe crear en la clase "Personajes" y dibujar en el canvas*/
                         if (personajeNombre === "Vaquero🤠") {
-                            personajeOponente = new Personajes("Vaquero🤠", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/vaquero.png", itemLista.id)
+                            personajeOponente = new Personajes("Vaquero🤠", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/vaquero.png", /*x*/100, /*y*/105, /*ancho*/25, /*alto*/50, itemLista.id)
                         }else if (personajeNombre === "Soldado🪖") {
-                            personajeOponente = new Personajes("Soldado🪖", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/soldado.png", itemLista.id)
+                            personajeOponente = new Personajes("Soldado🪖", ["🫀", "🫀", "🫀", "🫀", "🫀", "🫀"], "./img/personajesJugador/soldado.png", /*x*/290, /*y*/190, /*ancho*/50, /*alto*/50, itemLista.id)
                         }
 
                         /*se actualizan las coordenas x, y, mediante el item que se encuentra en la lista "oponentes" el cual contiene las coordenadas actualizadas del jugador oponente"*/

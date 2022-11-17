@@ -126,7 +126,7 @@ input:checked + label {
     color: #824203;
     font-family: 'Shadows Into Light';
     font-size: 155%;
-    width: 167px;
+    width: 172px;
     height: 71px;
     box-shadow: 1px 4px 7px 1px darkolivegreen;
     padding-top: 12px;
@@ -318,7 +318,7 @@ input:checked + label {
 @media (max-width: 390px) {
 
     .titulo {
-        width: 248px;
+        width: 268px;
         height: 66px;
         font-size: 296%;
     }
@@ -406,10 +406,10 @@ input:checked + label {
     }
     #divmensajes {
         display: grid;
-        grid-template-columns: 45px 45px;
+        grid-template-columns: 50px 45px;
         font-size: 18px;
         height: 270px;
-        width: 90px;
+        width: 125px;
         margin-bottom: 3px;
         overflow: auto;
     }
