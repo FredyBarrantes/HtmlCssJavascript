@@ -146,6 +146,6 @@ app.get("/poderSelec/:oponenteId", (req, res) => {
     console.log("Servidor On")
 })
 /*Otra manera de escribir funciones callback*/
-app.listen(3000, function() {
-    console.log("Server ON, port:3000")
+app.listen(8080, function() {
+    console.log("Server ON, port:8080")
 })
